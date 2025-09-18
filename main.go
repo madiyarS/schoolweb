@@ -208,22 +208,21 @@ func main() {
 
 
 	// --- Защищенные маршруты админ-панели ---
-	adminMux := http.NewServeMux()
-	adminMux.HandleFunc("/logout", logoutHandler)
-	adminMux.HandleFunc("/api/applications", applicationsAPIHandler)
-	adminMux.HandleFunc("/api/news", adminNewsAPIHandler)
-	adminMux.HandleFunc("/admin/dashboard.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "templates/dashboard.html")
-	})
-	adminMux.HandleFunc("/admin/applications.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "templates/applications.html")
-	})
-	adminMux.HandleFunc("/admin/add_news.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "templates/add_news.html")
-	})
+	// Обратите внимание: мы больше не используем отдельный adminMux, а регистрируем все на основном mux
+	// и оборачиваем каждый защищенный маршрут в authMiddleware.
+	mux.Handle("/admin/logout", authMiddleware(http.HandlerFunc(logoutHandler)))
+	mux.Handle("/admin/api/applications", authMiddleware(http.HandlerFunc(applicationsAPIHandler)))
+	mux.Handle("/admin/api/news", authMiddleware(http.HandlerFunc(adminNewsAPIHandler)))
 
-	// Оборачиваем все админские маршруты в authMiddleware
-	mux.Handle("/admin/", authMiddleware(adminMux))
+	mux.Handle("/admin/dashboard.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/dashboard.html")
+	})))
+	mux.Handle("/admin/applications.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/applications.html")
+	})))
+	mux.Handle("/admin/add_news.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/add_news.html")
+	})))
 
 
 	// --- Публичный статический сайт ---
