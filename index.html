@@ -1002,41 +1002,79 @@
             });
         });
 
-        // --- Contact Form Validation ---
+        // --- Contact Form Submission ---
         const form = document.getElementById('main-contact-form');
-        form.addEventListener('submit', function(event) {
+        form.addEventListener('submit', async function(event) {
             event.preventDefault();
-            let isValid = true;
 
+            let isValid = true;
             const name = document.getElementById('name');
             const email = document.getElementById('email');
             const message = document.getElementById('message');
 
-            // Reset errors
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.form-group input, .form-group textarea').forEach(el => el.style.borderColor = '#ccc');
+            [name, email, message].forEach(el => el.style.borderColor = '#ccc');
 
-            // Name validation
             if (name.value.trim() === '') {
                 isValid = false;
                 showError(name, 'Пожалуйста, введите ваше имя.');
             }
-            // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email.value)) {
                 isValid = false;
                 showError(email, 'Пожалуйста, введите корректный email.');
             }
-            // Message validation
             if (message.value.trim() === '') {
                 isValid = false;
                 showError(message, 'Пожалуйста, введите ваше сообщение.');
             }
 
-            if (isValid) {
-                // Here you would normally send the form data to a server
-                alert('Спасибо за ваше сообщение! Мы скоро с вами свяжемся.');
-                form.reset();
+            if (!isValid) return;
+
+            const formData = {
+                name: name.value,
+                email: email.value,
+                message: message.value
+            };
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Отправка...';
+
+            try {
+                const response = await fetch('/api/contact', { // Changed to relative path
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    form.reset();
+                    const successMessage = document.createElement('div');
+                    successMessage.textContent = result.message || 'Спасибо! Ваше сообщение отправлено.';
+                    successMessage.style.color = 'green';
+                    successMessage.style.marginTop = '1rem';
+                    form.appendChild(successMessage);
+                    setTimeout(() => { if(successMessage.parentNode) successMessage.parentNode.removeChild(successMessage) }, 5000);
+                } else {
+                    throw new Error(result.message || 'Произошла ошибка при отправке.');
+                }
+
+            } catch (error) {
+                const formStatus = document.querySelector('.form-status');
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = error.message || 'Не удалось отправить сообщение. Попробуйте позже.';
+                errorMessage.style.color = '#ef4444';
+                errorMessage.style.marginTop = '1rem';
+                form.appendChild(errorMessage);
+                setTimeout(() => { if(errorMessage.parentNode) errorMessage.parentNode.removeChild(errorMessage)}, 5000);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Отправить';
             }
         });
 
