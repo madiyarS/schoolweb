@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central School - Образовательное Учреждение</title>
+
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* CSS Reset and Basic Setup */
+        :root {
+            --primary-dark-blue: #1e3a8a;
+            --primary-white: #ffffff;
+            --accent-gold: #fbbf24;
+            --accent-light-blue: #3b82f6;
+            --bg-light-gray: #f8fafc;
+            --text-dark-gray: #1f2937;
+            --text-light-gray: #6b7280;
+            --font-header: 'Poppins', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-dark-gray);
+            background-color: var(--primary-white);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 1.5rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-header);
+            font-weight: 700;
+            color: var(--primary-dark-blue);
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.25rem; margin-bottom: 2rem; text-align: center; }
+        h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        p { margin-bottom: 1rem; color: var(--text-light-gray); }
+        a { text-decoration: none; color: var(--accent-light-blue); }
+        section { padding: 6rem 0; }
+        .section-bg { background-color: var(--bg-light-gray); }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-header);
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-gold);
+            color: var(--primary-dark-blue);
+        }
+        .btn-primary:hover {
+            background-color: #facc15;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-white);
+            border-color: var(--primary-white);
+        }
+        .btn-secondary:hover {
+            background-color: var(--primary-white);
+            color: var(--primary-dark-blue);
+        }
+
+        /* Glassmorphism effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Header */
+        #main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+        }
+        #main-header.scrolled {
+            background-color: rgba(30, 58, 138, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 0;
+            box-shadow: var(--shadow-md);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: var(--font-header);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-white);
+        }
+        .logo span { color: var(--accent-gold); }
+
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+        }
+        .nav-menu li { margin-left: 2rem; }
+        .nav-menu a {
+            color: var(--primary-white);
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 0.25rem;
+        }
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+        .nav-menu a:hover::after, .nav-menu a.active::after { width: 100%; }
+
+        .header-actions { display: flex; align-items: center; gap: 1rem; }
+        .lang-switcher { color: white; cursor: pointer; }
+        .mobile-menu-toggle { display: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero Section */
+        #hero {
+            color: var(--primary-white);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 1.5rem;
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            position: relative;
+        }
+        .hero-content {
+            max-width: 800px;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            color: var(--primary-white);
+            margin-bottom: 1rem;
+        }
+        .hero-content .subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        .hero-content .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        .about-image { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .stat-item .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-light-blue);
+        }
+        .stat-item .stat-label { font-weight: 500; }
+
+        /* Programs Section */
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .program-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .program-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        .program-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .program-card-content { padding: 1.5rem; }
+        .program-card-content h3 { color: var(--primary-dark-blue); }
+        .program-card-content .btn { margin-top: 1rem; }
+
+        /* Achievements Section */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .achievement-item {
+            text-align: center;
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+        }
+        .achievement-item:hover {
+            border-color: var(--accent-light-blue);
+            background-color: var(--primary-white);
+        }
+        .achievement-item .icon {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        /* Testimonials Section */
+        .testimonial-carousel {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .testimonial-slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .testimonial {
+            flex: 0 0 100%;
+            padding: 2rem;
+            text-align: center;
+        }
+        .testimonial blockquote {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        .testimonial cite {
+            font-weight: 600;
+            color: var(--primary-dark-blue);
+        }
+        .carousel-dots {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .dot.active { background-color: var(--accent-light-blue); }
+
+        /* Infrastructure Section */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .gallery-item {
+            overflow: hidden;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            position: relative;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-item .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(30, 58, 138, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .overlay { opacity: 1; }
+
+        /* Teachers Section */
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .teacher-card { text-align: center; }
+        .teacher-card img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 4px solid var(--accent-gold);
+            box-shadow: var(--shadow-md);
+        }
+        .teacher-card h4 { margin-bottom: 0.25rem; }
+
+        /* Contact Section */
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            background: var(--primary-white);
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        .contact-info h3, .contact-form h3 {
+            margin-top: 0;
+            text-align: left;
+        }
+        .contact-info ul { list-style: none; }
+        .contact-info li { display: flex; align-items: center; margin-bottom: 1rem; }
+        .contact-info i {
+            color: var(--accent-light-blue);
+            font-size: 1.25rem;
+            width: 30px;
+        }
+        .map-container {
+            margin-top: 2rem;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            height: 250px;
+        }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-light-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark-blue);
+            color: var(--primary-white);
+            padding: 4rem 0 2rem;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .footer-col h4 { color: var(--accent-gold); margin-bottom: 1rem; }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 0.5rem; }
+        .footer-col a { color: #d1d5db; transition: color 0.3s ease; }
+        .footer-col a:hover { color: var(--primary-white); }
+        .social-links a {
+            display: inline-block;
+            color: var(--primary-white);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-links a:hover { color: var(--accent-gold); transform: translateY(-2px); }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.875rem;
+            color: #d1d5db;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            background-color: var(--primary-white);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            position: relative;
+            animation: slide-down 0.5s ease;
+        }
+        @keyframes slide-down {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close-modal {
+            color: var(--text-light-gray);
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover { color: var(--text-dark-gray); }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .about-grid, .contact-wrapper { grid-template-columns: 1fr; }
+            .header-content { padding: 0 1.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .hero-content h1 { font-size: 2.8rem; }
+            h2 { font-size: 1.8rem; }
+            section { padding: 4rem 0; }
+
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--primary-dark-blue);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.5s ease-in-out;
+                box-shadow: var(--shadow-lg);
+            }
+            .nav-menu.active { right: 0; }
+            .nav-menu ul { flex-direction: column; }
+            .nav-menu li { margin: 1.5rem 0; }
+            .mobile-menu-toggle { display: block; z-index: 1001; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка (Header) -->
+    <header id="main-header">
+        <div class="container header-content">
+            <a href="#hero" class="logo">Central<span>School</span></a>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#about" class="nav-link">О школе</a></li>
+                    <li><a href="#programs" class="nav-link">Программы</a></li>
+                    <li><a href="#achievements" class="nav-link">Достижения</a></li>
+                    <li><a href="#contact" class="nav-link">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="#contact" class="btn btn-primary">Поступить</a>
+                <div class="lang-switcher">РУС</div>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Главный баннер (Hero Section) -->
+        <section id="hero">
+            <div class="hero-content fade-in">
+                <h1>Открываем двери в успешное будущее</h1>
+                <p class="subtitle">Инновационное образование, основанное на лучших мировых практиках и национальных традициях.</p>
+                <div class="cta-buttons">
+                    <a href="#programs" class="btn btn-primary">Наши программы</a>
+                    <a href="#about" class="btn btn-secondary">Узнать больше</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- О школе (About) -->
+        <section id="about" class="container">
+            <div class="about-grid fade-in">
+                <div class="about-text">
+                    <h2>Наша миссия — воспитать лидеров нового поколения</h2>
+                    <p>Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.</p>
+                    <p>Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.</p>
+                </div>
+                <div class="about-image-container">
+                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop" alt="Студенты в кампусе" class="about-image">
+                </div>
+            </div>
+            <div class="stats-grid fade-in">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="20">0</div>
+                    <div class="stat-label">Лет на рынке образования</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="1500">0</div>
+                    <div class="stat-label">Счастливых учеников</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="5000">0</div>
+                    <div class="stat-label">Выпускников</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="95">0</div>
+                    <div class="stat-label">% поступления в вузы</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Образовательные программы -->
+        <section id="programs" class="section-bg">
+            <div class="container">
+                <h2>Образовательные программы</h2>
+                <div class="programs-grid">
+                    <div class="program-card fade-in">
+                        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" alt="Начальная школа" class="program-card-img">
+                        <div class="program-card-content">
+                            <h3>Начальная школа</h3>
+                            <p>Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.</p>
+                            <button class="btn btn-primary open-modal" data-modal-id="modal-primary">Подробнее</button>
+                        </div>
+                    </div>
+                    <div class="program-card fade-in" style="transition-delay: 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="Средняя школа" class="program-card-img">
+                        <div class="program-card-content">
+                            <h3>Средняя и старшая школа</h3>
+                            <p>Углубленное изучение предметов и профильная подготовка к будущей профессии.</p>
+                             <button class="btn btn-primary open-modal" data-modal-id="modal-secondary">Подробнее</button>
+                        </div>
+                    </div>
+                    <div class="program-card fade-in" style="transition-delay: 0.4s;">
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" alt="Подготовка к экзаменам" class="program-card-img">
+                        <div class="program-card-content">
+                            <h3>Подготовка к ЕНТ и IELTS</h3>
+                            <p>Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.</p>
+                             <button class="btn btn-primary open-modal" data-modal-id="modal-exams">Подробнее</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Достижения и признание -->
+        <section id="achievements">
+            <div class="container">
+                <h2>Достижения и признание</h2>
+                <div class="achievements-grid">
+                    <div class="achievement-item fade-in">
+                        <div class="icon"><i class="fas fa-award"></i></div>
+                        <h3>Топ-5 школ страны</h3>
+                        <p>Входим в пятерку лучших по результатам национальных рейтингов.</p>
+                    </div>
+                    <div class="achievement-item fade-in" style="transition-delay: 0.2s;">
+                        <div class="icon"><i class="fas fa-user-graduate"></i></div>
+                        <h3>95% поступлений</h3>
+                        <p>Наши выпускники поступают в ведущие университеты мира.</p>
+                    </div>
+                    <div class="achievement-item fade-in" style="transition-delay: 0.4s;">
+                        <div class="icon"><i class="fas fa-trophy"></i></div>
+                        <h3>Победители олимпиад</h3>
+                        <p>Ежегодно наши ученики занимают призовые места на олимпиадах.</p>
+                    </div>
+                    <div class="achievement-item fade-in" style="transition-delay: 0.6s;">
+                        <div class="icon"><i class="fas fa-certificate"></i></div>
+                        <h3>Международная аккредитация</h3>
+                        <p>Наши программы соответствуют высоким мировым стандартам.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Отзывы -->
+        <section id="testimonials" class="section-bg">
+            <div class="container">
+                <h2>Что говорят о нас</h2>
+                <div class="testimonial-carousel fade-in">
+                    <div class="testimonial-slider">
+                        <div class="testimonial">
+                            <blockquote>"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!"</blockquote>
+                            <cite>— Асем Муратова, родитель</cite>
+                        </div>
+                        <div class="testimonial">
+                            <blockquote>"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников."</blockquote>
+                            <cite>— Арман Султанов, выпускник</cite>
+                        </div>
+                        <div class="testimonial">
+                            <blockquote>"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах."</blockquote>
+                            <cite>— Елена Петрова, родитель</cite>
+                        </div>
+                    </div>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Инфраструктура -->
+        <section id="infrastructure">
+            <div class="container">
+                <h2>Современная инфраструктура</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-item fade-in">
+                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1932&auto=format&fit=crop" alt="Современный класс">
+                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="gallery-item fade-in" style="transition-delay: 0.1s;">
+                        <img src="https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?q=80&w=2070&auto=format&fit=crop" alt="Научная лаборатория">
+                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="gallery-item fade-in" style="transition-delay: 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1558008423-a26a73865528?q=80&w=2070&auto=format&fit=crop" alt="Спортивный зал">
+                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                     <div class="gallery-item fade-in" style="transition-delay: 0.3s;">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1854&auto=format&fit=crop" alt="Библиотека">
+                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Педагогический состав -->
+        <section id="teachers" class="section-bg">
+            <div class="container">
+                <h2>Наши педагоги</h2>
+                <div class="teachers-grid">
+                    <div class="teacher-card fade-in">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1888&auto=format&fit=crop" alt="Teacher 1">
+                        <h4>Айжан Ахметова</h4>
+                        <p>Кандидат педагогических наук, учитель математики</p>
+                    </div>
+                    <div class="teacher-card fade-in" style="transition-delay: 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1580894732444-8ecded7948b4?q=80&w=2070&auto=format&fit=crop" alt="Teacher 2">
+                        <h4>Майкл Джонсон</h4>
+                        <p>Носитель языка, сертификат CELTA, учитель английского</p>
+                    </div>
+                    <div class="teacher-card fade-in" style="transition-delay: 0.4s;">
+                        <img src="https://images.unsplash.com/photo-1594744800539-8376453955ce?q=80&w=1887&auto=format&fit=crop" alt="Teacher 3">
+                        <h4>Ернар Кайратов</h4>
+                        <p>Магистр наук, учитель физики и робототехники</p>
+                    </div>
+                     <div class="teacher-card fade-in" style="transition-delay: 0.6s;">
+                        <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=1887&auto=format&fit=crop" alt="Teacher 4">
+                        <h4>Ольга Васильева</h4>
+                        <p>Заслуженный деятель искусств, учитель музыки</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Контакты и поступление -->
+        <section id="contact">
+            <div class="container">
+                <h2>Контакты и поступление</h2>
+                <div class="contact-wrapper fade-in">
+                    <div class="contact-info">
+                        <h3>Свяжитесь с нами</h3>
+                        <p>Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.</p>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i> г. Астана, ул. Просвещения, 1</li>
+                            <li><i class="fas fa-phone"></i> +7 (7172) 123-45-67</li>
+                            <li><i class="fas fa-envelope"></i> admissions@centralschool.kz</li>
+                        </ul>
+                        <div class="map-container">
+                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2505.954366918958!2d71.4162963156689!3d51.09085887956895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x424584285e669e45%3A0x4c2d82928f6453b6!2z0JzQtdC20LTRg9C90LDRgNC-0LTQvdGLINCy0YvQutC-0LzQvtGA0L7QtNC90YvQuQ!5e0!3m2!1sru!2skz!4v1678886400000!5m2!1sru!2skz" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h3>Задать вопрос</h3>
+                        <form id="main-contact-form" novalidate>
+                            <div class="form-group">
+                                <input type="text" id="name" name="name" placeholder="Ваше имя" required>
+                                <div class="error-message">Пожалуйста, введите ваше имя.</div>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="email" name="email" placeholder="Ваш Email" required>
+                                <div class="error-message">Пожалуйста, введите корректный email.</div>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение" required></textarea>
+                                <div class="error-message">Пожалуйста, введите ваше сообщение.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер (Footer) -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Central School</h4>
+                    <p>Ведущее образовательное учреждение, формирующее будущее поколение лидеров.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Быстрые ссылки</h4>
+                    <ul>
+                        <li><a href="#about">О школе</a></li>
+                        <li><a href="#programs">Программы</a></li>
+                        <li><a href="#achievements">Достижения</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <ul>
+                        <li>г. Астана, ул. Просвещения, 1</li>
+                        <li>+7 (7172) 123-45-67</li>
+                        <li>info@centralschool.kz</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Central School. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div id="modal-primary" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Программа начальной школы</h3>
+            <p>Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.</p>
+            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Начальная школа">
+        </div>
+    </div>
+    <div id="modal-secondary" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Программа средней и старшей школы</h3>
+            <p>В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.</p>
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Средняя школа">
+        </div>
+    </div>
+    <div id="modal-exams" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Подготовка к ЕНТ и международным экзаменам</h3>
+            <p>Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов.</p>
+             <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Подготовка к экзаменам">
+        </div>
+    </div>
+
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px; padding:1rem;">
+             <span class="close-modal">&times;</span>
+             <img id="gallery-modal-image" src="" alt="Gallery image" style="width:100%; border-radius: var(--radius-md);">
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- Header Scroll Effect ---
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // --- Mobile Menu ---
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                    menuToggle.querySelector('i').classList.add('fa-bars');
+                    menuToggle.querySelector('i').classList.remove('fa-times');
+                }
+            });
+        });
+
+        // --- Active Nav Link Highlighting on Scroll ---
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // --- Scroll Animations ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- Animated Counters ---
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200; // The lower the slower
+        const counterObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const updateCount = () => {
+                        const target = +counter.getAttribute('data-target');
+                        const count = +counter.innerText;
+                        const inc = target / speed;
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + inc);
+                            setTimeout(updateCount, 10);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    };
+                    updateCount();
+                    observer.unobserve(counter); // Stop observing once animated
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(counter => counterObserver.observe(counter));
+
+        // --- Testimonial Carousel ---
+        const slider = document.querySelector('.testimonial-slider');
+        const testimonials = document.querySelectorAll('.testimonial');
+        const dotsContainer = document.querySelector('.carousel-dots');
+        let currentIndex = 0;
+
+        if (slider && testimonials.length > 0) {
+            testimonials.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            const dots = document.querySelectorAll('.dot');
+
+            function goToSlide(index) {
+                slider.style.transform = `translateX(-${index * 100}%)`;
+                dots.forEach(d => d.classList.remove('active'));
+                dots[index].classList.add('active');
+                currentIndex = index;
+            }
+
+            setInterval(() => {
+                let nextIndex = (currentIndex + 1) % testimonials.length;
+                goToSlide(nextIndex);
+            }, 5000); // Auto-scroll every 5 seconds
+        }
+
+        // --- Modal Logic ---
+        const modals = document.querySelectorAll('.modal');
+        const openModalButtons = document.querySelectorAll('.open-modal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+
+        openModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modalId = button.getAttribute('data-modal-id');
+                const modal = document.getElementById(modalId);
+                if (modal) modal.style.display = 'block';
+            });
+        });
+
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.closest('.modal').style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', (event) => {
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // --- Gallery Modal ---
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const galleryModal = document.getElementById('gallery-modal');
+        const galleryModalImage = document.getElementById('gallery-modal-image');
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const imgSrc = item.querySelector('img').src;
+                galleryModalImage.src = imgSrc;
+                galleryModal.style.display = 'block';
+            });
+        });
+
+        // --- Contact Form Validation ---
+        const form = document.getElementById('main-contact-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isValid = true;
+
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const message = document.getElementById('message');
+
+            // Reset errors
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.form-group input, .form-group textarea').forEach(el => el.style.borderColor = '#ccc');
+
+            // Name validation
+            if (name.value.trim() === '') {
+                isValid = false;
+                showError(name, 'Пожалуйста, введите ваше имя.');
+            }
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                isValid = false;
+                showError(email, 'Пожалуйста, введите корректный email.');
+            }
+            // Message validation
+            if (message.value.trim() === '') {
+                isValid = false;
+                showError(message, 'Пожалуйста, введите ваше сообщение.');
+            }
+
+            if (isValid) {
+                // Here you would normally send the form data to a server
+                alert('Спасибо за ваше сообщение! Мы скоро с вами свяжемся.');
+                form.reset();
+            }
+        });
+
+        function showError(input, message) {
+            const formGroup = input.parentElement;
+            const errorDiv = formGroup.querySelector('.error-message');
+            input.style.borderColor = '#ef4444';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    });
+    </script>
+
+</body>
+</html>
