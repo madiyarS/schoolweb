@@ -2,10 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
 
@@ -26,6 +31,7 @@ var (
 type ContactForm struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
+	Phone   string `json:"phone"`
 	Message string `json:"message"`
 }
 
@@ -34,13 +40,6 @@ type Credentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-
-// NewsFormData для парсинга JSON при создании новости
-type NewsFormData struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
-}
-
 
 // --- Middleware ---
 
@@ -73,25 +72,63 @@ func newsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(articles)
 }
 
-func adminNewsAPIHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var formData NewsFormData
-	err := json.NewDecoder(r.Body).Decode(&formData)
+func handleFileUpload(r *http.Request) (string, error) {
+	file, handler, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+		if err == http.ErrMissingFile {
+			return "", nil // Файл не был загружен, это не ошибка
+		}
+		return "", err
+	}
+	defer file.Close()
+
+	// Создаем уникальное имя файла
+	uniqueFileName := fmt.Sprintf("%d%s", time.Now().UnixNano(), filepath.Ext(handler.Filename))
+	filePath := filepath.Join("public", "uploads", uniqueFileName)
+
+	// Создаем файл на сервере
+	dst, err := os.Create(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer dst.Close()
+
+	// Копируем содержимое загруженного файла
+	if _, err := io.Copy(dst, file); err != nil {
+		return "", err
+	}
+
+	return "/uploads/" + uniqueFileName, nil
+}
+
+func adminCreateNewsHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil { // 10 MB
+		http.Error(w, "Unable to parse form", http.StatusBadRequest)
 		return
 	}
 
-	if formData.Title == "" || formData.Content == "" {
+	// Получаем текстовые поля из формы
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	imageURLFromForm := r.FormValue("image_url")
+
+	if title == "" || content == "" {
 		http.Error(w, "Title and content are required", http.StatusBadRequest)
 		return
 	}
 
-	err = SaveNews(formData.Title, formData.Content)
+	// Приоритет у загруженного файла
+	finalImageURL, err := handleFileUpload(r)
+	if err != nil {
+		http.Error(w, "Failed to upload file", http.StatusInternalServerError)
+		return
+	}
+
+	if finalImageURL == "" {
+		finalImageURL = imageURLFromForm // Если файл не загружен, используем URL из формы
+	}
+
+	err = SaveNews(title, content, finalImageURL)
 	if err != nil {
 		http.Error(w, "Failed to save news", http.StatusInternalServerError)
 		return
@@ -99,6 +136,83 @@ func adminNewsAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 }
+
+func getSingleNewsArticleHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		http.Error(w, "Missing news ID", http.StatusBadRequest)
+		return
+	}
+
+	article, err := GetNewsArticle(id)
+	if err != nil {
+		http.Error(w, "Article not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(article)
+}
+
+func updateNewsArticleHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil { // 10 MB
+		http.Error(w, "Unable to parse form", http.StatusBadRequest)
+		return
+	}
+
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		http.Error(w, "Missing news ID", http.StatusBadRequest)
+		return
+	}
+
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+
+	if title == "" || content == "" {
+		http.Error(w, "Title and content are required", http.StatusBadRequest)
+		return
+	}
+
+	// Получаем текущую статью из БД, чтобы знать ее текущий URL изображения
+	existingArticle, err := GetNewsArticle(id)
+	if err != nil {
+		http.Error(w, "Article not found", http.StatusNotFound)
+		return
+	}
+
+	// Пытаемся обработать загрузку нового файла
+	newImageURL, err := handleFileUpload(r)
+	if err != nil {
+		http.Error(w, "Failed to upload file", http.StatusInternalServerError)
+		return
+	}
+
+	// Определяем финальный URL изображения
+	finalImageURL := existingArticle.ImageURL // 1. По умолчанию, сохраняем старый URL
+
+	if newImageURL != "" {
+		// 2. Если загружен новый файл, он имеет наивысший приоритет
+		finalImageURL = newImageURL
+	} else if imageURLFromForm != existingArticle.ImageURL {
+		// 3. Если файл не загружен, проверяем, изменил ли пользователь текстовое поле URL.
+		// Это позволяет пользователю как обновить URL на новый, так и удалить его (отправив пустое поле),
+		// но не удалит существующий URL, если пользователь просто ничего не трогал.
+		finalImageURL = imageURLFromForm
+	}
+
+	// Обновляем статью в БД
+	err = UpdateNewsArticle(id, title, content, finalImageURL)
+	if err != nil {
+		http.Error(w, "Failed to update news", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 
 func applicationsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	contacts, err := GetContacts()
@@ -195,44 +309,52 @@ func main() {
 	// Инициализируем базу данных
 	InitDB("school.db")
 
-	// --- Настройка маршрутизатора ---
-	mux := http.NewServeMux()
+	r := mux.NewRouter()
 
-	// --- Публичные маршруты ---
-	mux.HandleFunc("/api/contact", contactHandler)
-	mux.HandleFunc("/api/news", newsAPIHandler)
-	mux.HandleFunc("/login", loginHandler)
-	mux.HandleFunc("/admin/login.html", func(w http.ResponseWriter, r *http.Request) {
+	// --- Публичные API и страницы ---
+	r.HandleFunc("/api/contact", contactHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/news", newsAPIHandler).Methods("GET")
+	r.HandleFunc("/login", loginHandler).Methods("POST")
+	r.HandleFunc("/admin/login.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/login.html")
 	})
 
+	// --- Защищенный Subrouter для админ-панели ---
+	adminRouter := r.PathPrefix("/admin").Subrouter()
+	adminRouter.Use(authMiddleware) // Применяем middleware ко всем маршрутам админки
 
-	// --- Защищенные маршруты админ-панели ---
-	// Обратите внимание: мы больше не используем отдельный adminMux, а регистрируем все на основном mux
-	// и оборачиваем каждый защищенный маршрут в authMiddleware.
-	mux.Handle("/admin/logout", authMiddleware(http.HandlerFunc(logoutHandler)))
-	mux.Handle("/admin/api/applications", authMiddleware(http.HandlerFunc(applicationsAPIHandler)))
-	mux.Handle("/admin/api/news", authMiddleware(http.HandlerFunc(adminNewsAPIHandler)))
+	// API маршруты админки
+	adminRouter.HandleFunc("/api/applications", applicationsAPIHandler).Methods("GET")
+	adminRouter.HandleFunc("/api/news", adminCreateNewsHandler).Methods("POST")
+	adminRouter.HandleFunc("/api/news/{id}", getSingleNewsArticleHandler).Methods("GET")
+	adminRouter.HandleFunc("/api/news/{id}", updateNewsArticleHandler).Methods("PUT")
+	adminRouter.HandleFunc("/logout", logoutHandler).Methods("POST")
 
-	mux.Handle("/admin/dashboard.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Статические файлы админки
+	adminRouter.HandleFunc("/dashboard.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/dashboard.html")
-	})))
-	mux.Handle("/admin/applications.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	})
+	adminRouter.HandleFunc("/applications.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/applications.html")
-	})))
-	mux.Handle("/admin/add_news.html", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	})
+	adminRouter.HandleFunc("/add_news.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/add_news.html")
-	})))
+	})
+	adminRouter.HandleFunc("/news_list.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/news_list.html")
+	})
+	adminRouter.HandleFunc("/edit_news.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/edit_news.html")
+	})
 
 
 	// --- Публичный статический сайт ---
-	// Этот обработчик должен быть последним, так как он ловит все остальные запросы
-	mux.Handle("/", http.FileServer(http.Dir("public")))
-
+	// Этот обработчик должен быть последним
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("public")))
 
 	// Запускаем сервер на порту 8080
 	log.Println("Запуск сервера на http://localhost:8080")
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		log.Fatalf("Не удалось запустить сервер: %v", err)
 	}

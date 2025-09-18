@@ -442,6 +442,11 @@
             display: flex;
             flex-direction: column;
         }
+        .news-card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
         .news-card-content {
             padding: 1.5rem;
             flex-grow: 1;
@@ -859,6 +864,10 @@
                                 <div class="error-message" data-i18n-key="contact.form.errorEmail">Пожалуйста, введите корректный email.</div>
                             </div>
                             <div class="form-group">
+                                <input type="tel" id="phone" name="phone" placeholder="Номер телефона" required data-i18n-key="contact.form.phone" data-i18n-key-placeholder>
+                                <div class="error-message" data-i18n-key="contact.form.errorPhone">Пожалуйста, введите номер телефона.</div>
+                            </div>
+                            <div class="form-group">
                                 <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение" required data-i18n-key="contact.form.message" data-i18n-key-placeholder></textarea>
                                 <div class="error-message" data-i18n-key="contact.form.errorMessage">Пожалуйста, введите ваше сообщение.</div>
                             </div>
@@ -1015,10 +1024,12 @@
                 "contact.form.title": "Задать вопрос",
                 "contact.form.name": "Ваше имя",
                 "contact.form.email": "Ваш Email",
+                "contact.form.phone": "Номер телефона",
                 "contact.form.message": "Ваше сообщение",
                 "contact.form.submit": "Отправить",
                 "contact.form.errorName": "Пожалуйста, введите ваше имя.",
                 "contact.form.errorEmail": "Пожалуйста, введите корректный email.",
+                "contact.form.errorPhone": "Пожалуйста, введите номер телефона.",
                 "contact.form.errorMessage": "Пожалуйста, введите ваше сообщение.",
                 "contact.form.sending": "Отправка...",
                 "contact.form.success": "Сообщение успешно получено и сохранено!",
@@ -1101,10 +1112,12 @@
                 "contact.form.title": "Сұрақ қою",
                 "contact.form.name": "Сіздің атыңыз",
                 "contact.form.email": "Сіздің Email",
+                "contact.form.phone": "Телефон нөмірі",
                 "contact.form.message": "Сіздің хабарламаңыз",
                 "contact.form.submit": "Жіберу",
                 "contact.form.errorName": "Өтінемін, атыңызды енгізіңіз.",
                 "contact.form.errorEmail": "Өтінемін, дұрыс email енгізіңіз.",
+                "contact.form.errorPhone": "Өтінемін, телефон нөмірін енгізіңіз.",
                 "contact.form.errorMessage": "Өтінемін, хабарламаңызды енгізіңіз.",
                 "contact.form.sending": "Жіберілуде...",
                 "contact.form.success": "Хабарлама сәтті алынды және сақталды!",
@@ -1142,7 +1155,13 @@
                     articleEl.className = 'news-card';
                     const postDate = new Date(article.created_at).toLocaleDateString('ru-RU');
 
+                    let imageHTML = '';
+                    if (article.image_url) {
+                        imageHTML = `<img src="${article.image_url}" alt="${article.title}" class="news-card-image">`;
+                    }
+
                     articleEl.innerHTML = `
+                        ${imageHTML}
                         <div class="news-card-content">
                             <h3>${article.title}</h3>
                             <p>${article.content}</p>
@@ -1372,10 +1391,11 @@
             let isValid = true;
             const name = document.getElementById('name');
             const email = document.getElementById('email');
+            const phone = document.getElementById('phone');
             const message = document.getElementById('message');
 
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-            [name, email, message].forEach(el => el.style.borderColor = '#ccc');
+            [name, email, phone, message].forEach(el => el.style.borderColor = '#ccc');
 
             if (name.value.trim() === '') {
                 isValid = false;
@@ -1391,11 +1411,17 @@
                 showError(message, 'Пожалуйста, введите ваше сообщение.');
             }
 
+            if (phone.value.trim() === '') {
+                isValid = false;
+                showError(phone, 'Пожалуйста, введите номер телефона.');
+            }
+
             if (!isValid) return;
 
             const formData = {
                 name: name.value,
                 email: email.value,
+                phone: phone.value,
                 message: message.value
             };
 

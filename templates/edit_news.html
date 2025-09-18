@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать новость - Панель администратора</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
+        .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 240px; background-color: #1e3a8a; color: white; padding-top: 20px; }
+        .sidebar h2 { text-align: center; color: white; margin-bottom: 2rem; }
+        .sidebar a { display: block; color: white; padding: 15px 20px; text-decoration: none; transition: background-color 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; }
+        .main-content { margin-left: 240px; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 1rem; margin-bottom: 2rem; }
+        .logout-btn { background: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        .logout-btn:hover { background: #c9302c; }
+        .form-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input[type="text"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+        textarea { resize: vertical; min-height: 200px; }
+        .submit-btn { background: #5cb85c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        .submit-btn:hover { background: #4cae4c; }
+        .status-message { margin-top: 1rem; padding: 10px; border-radius: 4px; display: none; }
+        .status-message.success { background-color: #dff0d8; color: #3c763d; }
+        .status-message.error { background-color: #f2dede; color: #a94442; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Админ-панель</h2>
+        <a href="/admin/dashboard.html">Главная</a>
+        <a href="/admin/applications.html">Просмотр заявок</a>
+        <a href="/admin/add_news.html">Добавить новость</a>
+        <a href="/admin/news_list.html" class="active">Список новостей</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Редактировать новость</h1>
+            <form action="/logout" method="post">
+                <button type="submit" class="logout-btn">Выйти</button>
+            </form>
+        </div>
+        <div class="form-container">
+            <form id="edit-news-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Заголовок:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Содержание:</label>
+                    <textarea id="content" name="content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Текущее изображение:</label>
+                    <div id="current-image-container">
+                        <p>Нет изображения</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="image">Загрузить новое изображение (заменит старое):</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn">Сохранить изменения</button>
+            </form>
+            <div id="status-message" class="status-message"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const form = document.getElementById('edit-news-form');
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+            const statusMessage = document.getElementById('status-message');
+            const currentImageContainer = document.getElementById('current-image-container');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const newsId = urlParams.get('id');
+
+            if (!newsId) {
+                document.querySelector('.form-container').innerHTML = '<p style="color:red;">ID новости не найден.</p>';
+                return;
+            }
+
+            // Загрузка данных статьи
+            try {
+                const response = await fetch(`/admin/api/news/${newsId}`);
+                if (!response.ok) throw new Error('Не удалось загрузить данные новости.');
+                const article = await response.json();
+                titleInput.value = article.title;
+                contentInput.value = article.content;
+                if (article.image_url) {
+                    currentImageContainer.innerHTML = `<img src="${article.image_url}" alt="Текущее изображение" style="max-width: 200px; max-height: 200px;">`;
+                }
+            } catch (error) {
+                 document.querySelector('.form-container').innerHTML = `<p style="color:red;">${error.message}</p>`;
+            }
+
+            // Обработка отправки формы
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                statusMessage.style.display = 'none';
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(`/admin/api/news/${newsId}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        statusMessage.textContent = 'Новость успешно обновлена!';
+                        statusMessage.className = 'status-message success';
+                        // Обновляем отображение картинки, если была загружена новая
+                         setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        throw new Error('Не удалось обновить новость.');
+                    }
+                } catch (error) {
+                    statusMessage.textContent = `Ошибка: ${error.message}`;
+                    statusMessage.className = 'status-message error';
+                } finally {
+                    statusMessage.style.display = 'block';
+                    setTimeout(() => statusMessage.style.display = 'none', 5000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

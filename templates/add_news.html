@@ -32,6 +32,7 @@
         <a href="/admin/dashboard.html">Главная</a>
         <a href="/admin/applications.html">Просмотр заявок</a>
         <a href="/admin/add_news.html" class="active">Добавить новость</a>
+        <a href="/admin/news_list.html">Список новостей</a>
     </div>
 
     <div class="main-content">
@@ -42,7 +43,7 @@
             </form>
         </div>
         <div class="form-container">
-            <form id="add-news-form">
+            <form id="add-news-form" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Заголовок:</label>
                     <input type="text" id="title" name="title" required>
@@ -50,6 +51,14 @@
                 <div class="form-group">
                     <label for="content">Содержание:</label>
                     <textarea id="content" name="content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">Изображение (загрузить файл):</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                 <div class="form-group">
+                    <label for="image_url">Или URL изображения:</label>
+                    <input type="text" id="image_url" name="image_url">
                 </div>
                 <button type="submit" class="submit-btn">Опубликовать</button>
             </form>
@@ -60,13 +69,13 @@
     <script>
         document.getElementById('add-news-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
+            const form = event.target;
+            const formData = new FormData(form);
             const statusMessage = document.getElementById('status-message');
 
             statusMessage.style.display = 'none';
 
-            if (!title || !content) {
+            if (!formData.get('title') || !formData.get('content')) {
                 statusMessage.textContent = 'Заголовок и содержание не могут быть пустыми.';
                 statusMessage.className = 'status-message error';
                 statusMessage.style.display = 'block';
@@ -76,8 +85,7 @@
             try {
                 const response = await fetch('/admin/api/news', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, content })
+                    body: formData // Отправляем FormData, заголовок Content-Type установится автоматически
                 });
 
                 if (response.ok) {
