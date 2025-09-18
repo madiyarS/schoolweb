@@ -428,6 +428,33 @@
         }
         .teacher-card h4 { margin-bottom: 0.25rem; }
 
+        /* News Section */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .news-card {
+            background: var(--primary-white);
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+        .news-card-footer {
+            padding: 1rem 1.5rem;
+            background: var(--bg-light-gray);
+            font-size: 0.875rem;
+            color: var(--text-light-gray);
+            border-top: 1px solid #e5e7eb;
+        }
+
+
         /* Contact Section */
         .contact-wrapper {
             display: grid;
@@ -585,6 +612,7 @@
                     <li><a href="#about" class="nav-link" data-i18n-key="nav.about">О школе</a></li>
                     <li><a href="#programs" class="nav-link" data-i18n-key="nav.programs">Программы</a></li>
                     <li><a href="#achievements" class="nav-link" data-i18n-key="nav.achievements">Достижения</a></li>
+                    <li><a href="#news" class="nav-link" data-i18n-key="nav.news">Новости</a></li>
                     <li><a href="#contact" class="nav-link" data-i18n-key="nav.contact">Контакты</a></li>
                 </ul>
             </nav>
@@ -792,6 +820,16 @@
             </div>
         </section>
 
+        <!-- Новости -->
+        <section id="news">
+            <div class="container">
+                <h2 data-i18n-key="news.title">Последние новости</h2>
+                <div class="news-grid" id="news-grid-container">
+                    <!-- Новости будут загружены сюда с помощью JS -->
+                </div>
+            </div>
+        </section>
+
         <!-- Контакты и поступление -->
         <section id="contact">
             <div class="container">
@@ -846,6 +884,7 @@
                         <li><a href="#about" data-i18n-key="nav.about">О школе</a></li>
                         <li><a href="#programs" data-i18n-key="nav.programs">Программы</a></li>
                         <li><a href="#achievements" data-i18n-key="nav.achievements">Достижения</a></li>
+                        <li><a href="#news" data-i18n-key="nav.news">Новости</a></li>
                         <li><a href="#contact" data-i18n-key="nav.contact">Контакты</a></li>
                     </ul>
                 </div>
@@ -917,8 +956,13 @@
                 "nav.about": "О школе",
                 "nav.programs": "Программы",
                 "nav.achievements": "Достижения",
+                "nav.news": "Новости",
                 "nav.contact": "Контакты",
                 "nav.apply": "Поступить",
+                "news.title": "Последние новости",
+                "news.noNews": "Новостей пока нет.",
+                "news.error": "Не удалось загрузить новости.",
+                "news.published": "Опубликовано:",
                 "hero.title": "Открываем двери в успешное будущее",
                 "hero.subtitle": "Инновационное образование, основанное на лучших мировых практиках и национальных традициях.",
                 "hero.btnPrograms": "Наши программы",
@@ -998,8 +1042,13 @@
                 "nav.about": "Мектеп туралы",
                 "nav.programs": "Бағдарламалар",
                 "nav.achievements": "Жетістіктер",
+                "nav.news": "Жаңалықтар",
                 "nav.contact": "Байланыс",
                 "nav.apply": "Түсу",
+                "news.title": "Соңғы жаңалықтар",
+                "news.noNews": "Жаңалықтар әзірге жоқ.",
+                "news.error": "Жаңалықтарды жүктеу мүмкін болмады.",
+                "news.published": "Жарияланды:",
                 "hero.title": "Табысты болашаққа есік ашамыз",
                 "hero.subtitle": "Ең үздік әлемдік тәжірибе мен ұлттық дәстүрлерге негізделген инновациялық білім.",
                 "hero.btnPrograms": "Біздің бағдарламалар",
@@ -1073,6 +1122,44 @@
                 "modal.p3.text": "Біздің ҰБТ, IELTS, TOEFL және SAT-қа дайындық курстары тәжірибелі әдіскерлер әзірлеген. Біз жүйелі көзқарасты, тұрақты сынақ тесттері мен қателерді талдауды кепілдендіреміз, бұл біздің оқушыларымызға максималды нәтижеге жетуге мүмкіндік береді."
             }
         };
+
+        // --- News Loader ---
+        const loadNews = async () => {
+            const newsContainer = document.getElementById('news-grid-container');
+            try {
+                const response = await fetch('/api/news');
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const articles = await response.json();
+
+                if (!articles || articles.length === 0) {
+                    newsContainer.innerHTML = `<p data-i18n-key="news.noNews">Новостей пока нет.</p>`;
+                    return;
+                }
+
+                newsContainer.innerHTML = ''; // Clear container
+                articles.forEach(article => {
+                    const articleEl = document.createElement('div');
+                    articleEl.className = 'news-card';
+                    const postDate = new Date(article.created_at).toLocaleDateString('ru-RU');
+
+                    articleEl.innerHTML = `
+                        <div class="news-card-content">
+                            <h3>${article.title}</h3>
+                            <p>${article.content}</p>
+                        </div>
+                        <div class="news-card-footer">
+                            <span data-i18n-key="news.published">Опубликовано:</span> ${postDate}
+                        </div>
+                    `;
+                    newsContainer.appendChild(articleEl);
+                });
+            } catch (error) {
+                newsContainer.innerHTML = `<p data-i18n-key="news.error">Не удалось загрузить новости.</p>`;
+                console.error('Error fetching news:', error);
+            }
+        };
+        loadNews();
+
 
         const languageSwitcher = document.querySelector('.language-switcher');
         const langButton = document.querySelector('.lang-button');

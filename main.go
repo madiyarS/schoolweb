@@ -35,6 +35,12 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
+// NewsFormData для парсинга JSON при создании новости
+type NewsFormData struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
 
 // --- Middleware ---
 
@@ -56,6 +62,43 @@ func authMiddleware(next http.Handler) http.Handler {
 
 
 // --- Обработчики HTTP ---
+
+func newsAPIHandler(w http.ResponseWriter, r *http.Request) {
+	articles, err := GetNews()
+	if err != nil {
+		http.Error(w, "Failed to get news", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(articles)
+}
+
+func adminNewsAPIHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var formData NewsFormData
+	err := json.NewDecoder(r.Body).Decode(&formData)
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	if formData.Title == "" || formData.Content == "" {
+		http.Error(w, "Title and content are required", http.StatusBadRequest)
+		return
+	}
+
+	err = SaveNews(formData.Title, formData.Content)
+	if err != nil {
+		http.Error(w, "Failed to save news", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
 
 func applicationsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	contacts, err := GetContacts()
@@ -157,9 +200,10 @@ func main() {
 
 	// --- Публичные маршруты ---
 	mux.HandleFunc("/api/contact", contactHandler)
+	mux.HandleFunc("/api/news", newsAPIHandler)
 	mux.HandleFunc("/login", loginHandler)
 	mux.HandleFunc("/admin/login.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "admin/login.html")
+		http.ServeFile(w, r, "templates/login.html")
 	})
 
 
@@ -167,11 +211,15 @@ func main() {
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("/logout", logoutHandler)
 	adminMux.HandleFunc("/api/applications", applicationsAPIHandler)
+	adminMux.HandleFunc("/api/news", adminNewsAPIHandler)
 	adminMux.HandleFunc("/admin/dashboard.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "admin/dashboard.html")
+		http.ServeFile(w, r, "templates/dashboard.html")
 	})
 	adminMux.HandleFunc("/admin/applications.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "admin/applications.html")
+		http.ServeFile(w, r, "templates/applications.html")
+	})
+	adminMux.HandleFunc("/admin/add_news.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "templates/add_news.html")
 	})
 
 	// Оборачиваем все админские маршруты в authMiddleware
@@ -180,7 +228,7 @@ func main() {
 
 	// --- Публичный статический сайт ---
 	// Этот обработчик должен быть последним, так как он ловит все остальные запросы
-	mux.Handle("/", http.FileServer(http.Dir(".")))
+	mux.Handle("/", http.FileServer(http.Dir("public")))
 
 
 	// Запускаем сервер на порту 8080

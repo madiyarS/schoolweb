@@ -35,6 +35,20 @@ func InitDB(filepath string) {
 	}
 	statement.Exec()
 	log.Println("Таблица 'contacts' успешно создана или уже существует.")
+
+	// SQL-запрос для создания таблицы новостей
+	createNewsTableSQL := `CREATE TABLE IF NOT EXISTS news (
+		"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		"title" TEXT,
+		"content" TEXT,
+		"created_at" DATETIME
+	);`
+	statement, err = db.Prepare(createNewsTableSQL)
+	if err != nil {
+		log.Fatalf("Ошибка при подготовке SQL-запроса для создания таблицы новостей: %v", err)
+	}
+	statement.Exec()
+	log.Println("Таблица 'news' успешно создана или уже существует.")
 }
 
 // ContactEntry представляет одну запись в таблице contacts
@@ -84,4 +98,45 @@ func GetContacts() ([]ContactEntry, error) {
 	}
 
 	return contacts, nil
+}
+
+// --- Логика для новостей ---
+
+// NewsArticle представляет одну новостную статью.
+type NewsArticle struct {
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// SaveNews сохраняет новую статью в базу данных.
+func SaveNews(title, content string) error {
+	insertSQL := `INSERT INTO news(title, content, created_at) VALUES (?, ?, ?)`
+	statement, err := db.Prepare(insertSQL)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+	_, err = statement.Exec(title, content, time.Now())
+	return err
+}
+
+// GetNews извлекает все новости из базы данных.
+func GetNews() ([]NewsArticle, error) {
+	rows, err := db.Query("SELECT id, title, content, created_at FROM news ORDER BY created_at DESC")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var articles []NewsArticle
+	for rows.Next() {
+		var a NewsArticle
+		if err := rows.Scan(&a.ID, &a.Title, &a.Content, &a.CreatedAt); err != nil {
+			return nil, err
+		}
+		articles = append(articles, a)
+	}
+	return articles, nil
 }
