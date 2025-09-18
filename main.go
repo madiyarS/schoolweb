@@ -4,13 +4,110 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/gorilla/sessions"
 )
+
+// --- Глобальные переменные ---
+var (
+	// Ключ для cookie. ВАЖНО: В реальном приложении его нужно генерировать (например, `openssl rand -hex 32`) и хранить безопасно, например, в переменных окружения.
+	key   = []byte("super-secret-key-that-is-32-bytes-long-so-it-is-secure")
+	store = sessions.NewCookieStore(key)
+
+	// Учетные данные администратора (для простоты жестко закодированы)
+	adminUsername = "admin"
+	adminPassword = "password123"
+)
+
+// --- Структуры данных ---
 
 // ContactForm определяет структуру данных, получаемых из формы
 type ContactForm struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Message string `json:"message"`
+}
+
+// Credentials для парсинга JSON при логине
+type Credentials struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+
+// --- Middleware ---
+
+func authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, _ := store.Get(r, "session-name")
+
+		// Проверяем, аутентифицирован ли пользователь
+		if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+			// Перенаправляем на страницу входа, если не аутентифицирован
+			http.Redirect(w, r, "/admin/login.html", http.StatusFound)
+			return
+		}
+
+		// Если да, передаем управление следующему обработчику
+		next.ServeHTTP(w, r)
+	})
+}
+
+
+// --- Обработчики HTTP ---
+
+func applicationsAPIHandler(w http.ResponseWriter, r *http.Request) {
+	contacts, err := GetContacts()
+	if err != nil {
+		http.Error(w, "Failed to get contacts", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(contacts)
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	var creds Credentials
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	// Проверяем логин и пароль
+	if creds.Username != adminUsername || creds.Password != adminPassword {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Создаем сессию
+	session, _ := store.Get(r, "session-name")
+	session.Values["authenticated"] = true
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+
+	// Сбрасываем флаг аутентификации
+	session.Values["authenticated"] = false
+	session.Options.MaxAge = -1 // Удаляем cookie
+
+	err := session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/login.html", http.StatusFound)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,16 +152,40 @@ func main() {
 	// Инициализируем базу данных
 	InitDB("school.db")
 
-	// Создаем обработчик для статических файлов (наш index.html)
-	fs := http.FileServer(http.Dir("."))
-	http.Handle("/", fs)
+	// --- Настройка маршрутизатора ---
+	mux := http.NewServeMux()
 
-	// Регистрируем обработчик для API
-	http.HandleFunc("/api/contact", contactHandler)
+	// --- Публичные маршруты ---
+	mux.HandleFunc("/api/contact", contactHandler)
+	mux.HandleFunc("/login", loginHandler)
+	mux.HandleFunc("/admin/login.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "admin/login.html")
+	})
+
+
+	// --- Защищенные маршруты админ-панели ---
+	adminMux := http.NewServeMux()
+	adminMux.HandleFunc("/logout", logoutHandler)
+	adminMux.HandleFunc("/api/applications", applicationsAPIHandler)
+	adminMux.HandleFunc("/admin/dashboard.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "admin/dashboard.html")
+	})
+	adminMux.HandleFunc("/admin/applications.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "admin/applications.html")
+	})
+
+	// Оборачиваем все админские маршруты в authMiddleware
+	mux.Handle("/admin/", authMiddleware(adminMux))
+
+
+	// --- Публичный статический сайт ---
+	// Этот обработчик должен быть последним, так как он ловит все остальные запросы
+	mux.Handle("/", http.FileServer(http.Dir(".")))
+
 
 	// Запускаем сервер на порту 8080
 	log.Println("Запуск сервера на http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
 		log.Fatalf("Не удалось запустить сервер: %v", err)
 	}

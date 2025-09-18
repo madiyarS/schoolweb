@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Панель администратора</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .login-container { background-color: #fff; padding: 2rem 3rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 350px; }
+        h1 { color: #1e3a8a; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        button { width: 100%; padding: 0.75rem; border: none; border-radius: 4px; background-color: #1e3a8a; color: white; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; margin-top: 1rem; }
+        button:hover { background-color: #3b82f6; }
+        .error { color: #d93025; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Панель администратора</h1>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Логин:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Войти</button>
+        </form>
+        <div id="error-message" class="error"></div>
+    </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = this.username.value;
+            const password = this.password.value;
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = ''; // Clear previous errors
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    window.location.href = '/admin/dashboard.html';
+                } else {
+                    errorMessage.textContent = 'Неверный логин или пароль.';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Ошибка сети. Попробуйте позже.';
+            }
+        });
+    </script>
+</body>
+</html>
