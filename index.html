@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central School - Образовательное Учреждение</title>
+    <title data-i18n-key="title">Central School - Образовательное Учреждение</title>
 
     <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,8 +173,63 @@
         .nav-menu a:hover::after, .nav-menu a.active::after { width: 100%; }
 
         .header-actions { display: flex; align-items: center; gap: 1rem; }
-        .lang-switcher { color: white; cursor: pointer; }
         .mobile-menu-toggle { display: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: relative;
+        }
+        .lang-button {
+            background: transparent;
+            border: 1px solid var(--primary-white);
+            color: var(--primary-white);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            transition: background-color 0.3s ease;
+        }
+        .lang-button:hover {
+             background-color: rgba(255, 255, 255, 0.1);
+        }
+        .lang-button .fa-chevron-down {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+        .language-switcher.active .lang-button .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .lang-dropdown {
+            display: none;
+            position: absolute;
+            top: 150%;
+            right: 0;
+            background-color: var(--primary-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            list-style: none;
+            padding: 0.5rem 0;
+            z-index: 10;
+            min-width: 120px;
+            overflow: hidden;
+        }
+        .language-switcher.active .lang-dropdown {
+            display: block;
+        }
+        .lang-option {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-dark-gray);
+            transition: background-color 0.2s ease;
+            font-size: 0.9rem;
+        }
+        .lang-option:hover {
+            background-color: var(--bg-light-gray);
+        }
 
         /* Hero Section */
         #hero {
@@ -527,15 +582,24 @@
             <a href="#hero" class="logo">Central<span>School</span></a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="#about" class="nav-link">О школе</a></li>
-                    <li><a href="#programs" class="nav-link">Программы</a></li>
-                    <li><a href="#achievements" class="nav-link">Достижения</a></li>
-                    <li><a href="#contact" class="nav-link">Контакты</a></li>
+                    <li><a href="#about" class="nav-link" data-i18n-key="nav.about">О школе</a></li>
+                    <li><a href="#programs" class="nav-link" data-i18n-key="nav.programs">Программы</a></li>
+                    <li><a href="#achievements" class="nav-link" data-i18n-key="nav.achievements">Достижения</a></li>
+                    <li><a href="#contact" class="nav-link" data-i18n-key="nav.contact">Контакты</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
-                <a href="#contact" class="btn btn-primary">Поступить</a>
-                <div class="lang-switcher">РУС</div>
+                <a href="#contact" class="btn btn-primary" data-i18n-key="nav.apply">Поступить</a>
+                <div class="language-switcher">
+                    <button class="lang-button">
+                        <span class="current-lang">РУС</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="lang-dropdown">
+                        <li><a href="#" class="lang-option" data-lang="ru" data-i18n-key="lang.ru">Русский</a></li>
+                        <li><a href="#" class="lang-option" data-lang="kz" data-i18n-key="lang.kz">Қазақша</a></li>
+                    </ul>
+                </div>
                 <div class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -547,11 +611,11 @@
         <!-- Главный баннер (Hero Section) -->
         <section id="hero">
             <div class="hero-content fade-in">
-                <h1>Открываем двери в успешное будущее</h1>
-                <p class="subtitle">Инновационное образование, основанное на лучших мировых практиках и национальных традициях.</p>
+                <h1 data-i18n-key="hero.title">Открываем двери в успешное будущее</h1>
+                <p class="subtitle" data-i18n-key="hero.subtitle">Инновационное образование, основанное на лучших мировых практиках и национальных традициях.</p>
                 <div class="cta-buttons">
-                    <a href="#programs" class="btn btn-primary">Наши программы</a>
-                    <a href="#about" class="btn btn-secondary">Узнать больше</a>
+                    <a href="#programs" class="btn btn-primary" data-i18n-key="hero.btnPrograms">Наши программы</a>
+                    <a href="#about" class="btn btn-secondary" data-i18n-key="hero.btnAbout">Узнать больше</a>
                 </div>
             </div>
         </section>
@@ -560,9 +624,9 @@
         <section id="about" class="container">
             <div class="about-grid fade-in">
                 <div class="about-text">
-                    <h2>Наша миссия — воспитать лидеров нового поколения</h2>
-                    <p>Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.</p>
-                    <p>Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.</p>
+                    <h2 data-i18n-key="about.title">Наша миссия — воспитать лидеров нового поколения</h2>
+                    <p data-i18n-key="about.p1">Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.</p>
+                    <p data-i18n-key="about.p2">Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.</p>
                 </div>
                 <div class="about-image-container">
                     <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop" alt="Студенты в кампусе" class="about-image">
@@ -571,19 +635,19 @@
             <div class="stats-grid fade-in">
                 <div class="stat-item">
                     <div class="stat-number" data-target="20">0</div>
-                    <div class="stat-label">Лет на рынке образования</div>
+                    <div class="stat-label" data-i18n-key="about.stat1">Лет на рынке образования</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" data-target="1500">0</div>
-                    <div class="stat-label">Счастливых учеников</div>
+                    <div class="stat-label" data-i18n-key="about.stat2">Счастливых учеников</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" data-target="5000">0</div>
-                    <div class="stat-label">Выпускников</div>
+                    <div class="stat-label" data-i18n-key="about.stat3">Выпускников</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" data-target="95">0</div>
-                    <div class="stat-label">% поступления в вузы</div>
+                    <div class="stat-label" data-i18n-key="about.stat4">% поступления в вузы</div>
                 </div>
             </div>
         </section>
@@ -591,30 +655,30 @@
         <!-- Образовательные программы -->
         <section id="programs" class="section-bg">
             <div class="container">
-                <h2>Образовательные программы</h2>
+                <h2 data-i18n-key="programs.title">Образовательные программы</h2>
                 <div class="programs-grid">
                     <div class="program-card fade-in">
                         <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" alt="Начальная школа" class="program-card-img">
                         <div class="program-card-content">
-                            <h3>Начальная школа</h3>
-                            <p>Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.</p>
-                            <button class="btn btn-primary open-modal" data-modal-id="modal-primary">Подробнее</button>
+                            <h3 data-i18n-key="programs.card1.title">Начальная школа</h3>
+                            <p data-i18n-key="programs.card1.text">Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.</p>
+                            <button class="btn btn-primary open-modal" data-modal-id="modal-primary" data-i18n-key="common.details">Подробнее</button>
                         </div>
                     </div>
                     <div class="program-card fade-in" style="transition-delay: 0.2s;">
                         <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="Средняя школа" class="program-card-img">
                         <div class="program-card-content">
-                            <h3>Средняя и старшая школа</h3>
-                            <p>Углубленное изучение предметов и профильная подготовка к будущей профессии.</p>
-                             <button class="btn btn-primary open-modal" data-modal-id="modal-secondary">Подробнее</button>
+                            <h3 data-i18n-key="programs.card2.title">Средняя и старшая школа</h3>
+                            <p data-i18n-key="programs.card2.text">Углубленное изучение предметов и профильная подготовка к будущей профессии.</p>
+                             <button class="btn btn-primary open-modal" data-modal-id="modal-secondary" data-i18n-key="common.details">Подробнее</button>
                         </div>
                     </div>
                     <div class="program-card fade-in" style="transition-delay: 0.4s;">
                         <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" alt="Подготовка к экзаменам" class="program-card-img">
                         <div class="program-card-content">
-                            <h3>Подготовка к ЕНТ и IELTS</h3>
-                            <p>Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.</p>
-                             <button class="btn btn-primary open-modal" data-modal-id="modal-exams">Подробнее</button>
+                            <h3 data-i18n-key="programs.card3.title">Подготовка к ЕНТ и IELTS</h3>
+                            <p data-i18n-key="programs.card3.text">Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.</p>
+                             <button class="btn btn-primary open-modal" data-modal-id="modal-exams" data-i18n-key="common.details">Подробнее</button>
                         </div>
                     </div>
                 </div>
@@ -624,27 +688,27 @@
         <!-- Достижения и признание -->
         <section id="achievements">
             <div class="container">
-                <h2>Достижения и признание</h2>
+                <h2 data-i18n-key="achievements.title">Достижения и признание</h2>
                 <div class="achievements-grid">
                     <div class="achievement-item fade-in">
                         <div class="icon"><i class="fas fa-award"></i></div>
-                        <h3>Топ-5 школ страны</h3>
-                        <p>Входим в пятерку лучших по результатам национальных рейтингов.</p>
+                        <h3 data-i18n-key="achievements.item1.title">Топ-5 школ страны</h3>
+                        <p data-i18n-key="achievements.item1.text">Входим в пятерку лучших по результатам национальных рейтингов.</p>
                     </div>
                     <div class="achievement-item fade-in" style="transition-delay: 0.2s;">
                         <div class="icon"><i class="fas fa-user-graduate"></i></div>
-                        <h3>95% поступлений</h3>
-                        <p>Наши выпускники поступают в ведущие университеты мира.</p>
+                        <h3 data-i18n-key="achievements.item2.title">95% поступлений</h3>
+                        <p data-i18n-key="achievements.item2.text">Наши выпускники поступают в ведущие университеты мира.</p>
                     </div>
                     <div class="achievement-item fade-in" style="transition-delay: 0.4s;">
                         <div class="icon"><i class="fas fa-trophy"></i></div>
-                        <h3>Победители олимпиад</h3>
-                        <p>Ежегодно наши ученики занимают призовые места на олимпиадах.</p>
+                        <h3 data-i18n-key="achievements.item3.title">Победители олимпиад</h3>
+                        <p data-i18n-key="achievements.item3.text">Ежегодно наши ученики занимают призовые места на олимпиадах.</p>
                     </div>
                     <div class="achievement-item fade-in" style="transition-delay: 0.6s;">
                         <div class="icon"><i class="fas fa-certificate"></i></div>
-                        <h3>Международная аккредитация</h3>
-                        <p>Наши программы соответствуют высоким мировым стандартам.</p>
+                        <h3 data-i18n-key="achievements.item4.title">Международная аккредитация</h3>
+                        <p data-i18n-key="achievements.item4.text">Наши программы соответствуют высоким мировым стандартам.</p>
                     </div>
                 </div>
             </div>
@@ -653,20 +717,20 @@
         <!-- Отзывы -->
         <section id="testimonials" class="section-bg">
             <div class="container">
-                <h2>Что говорят о нас</h2>
+                <h2 data-i18n-key="testimonials.title">Что говорят о нас</h2>
                 <div class="testimonial-carousel fade-in">
                     <div class="testimonial-slider">
                         <div class="testimonial">
-                            <blockquote>"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!"</blockquote>
-                            <cite>— Асем Муратова, родитель</cite>
+                            <blockquote data-i18n-key="testimonials.item1.quote">"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!"</blockquote>
+                            <cite data-i18n-key="testimonials.item1.cite">— Асем Муратова, родитель</cite>
                         </div>
                         <div class="testimonial">
-                            <blockquote>"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников."</blockquote>
-                            <cite>— Арман Султанов, выпускник</cite>
+                            <blockquote data-i18n-key="testimonials.item2.quote">"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников."</blockquote>
+                            <cite data-i18n-key="testimonials.item2.cite">— Арман Султанов, выпускник</cite>
                         </div>
                         <div class="testimonial">
-                            <blockquote>"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах."</blockquote>
-                            <cite>— Елена Петрова, родитель</cite>
+                            <blockquote data-i18n-key="testimonials.item3.quote">"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах."</blockquote>
+                            <cite data-i18n-key="testimonials.item3.cite">— Елена Петрова, родитель</cite>
                         </div>
                     </div>
                     <div class="carousel-dots"></div>
@@ -677,7 +741,7 @@
         <!-- Инфраструктура -->
         <section id="infrastructure">
             <div class="container">
-                <h2>Современная инфраструктура</h2>
+                <h2 data-i18n-key="infrastructure.title">Современная инфраструктура</h2>
                 <div class="gallery-grid">
                     <div class="gallery-item fade-in">
                         <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1932&auto=format&fit=crop" alt="Современный класс">
@@ -702,27 +766,27 @@
          <!-- Педагогический состав -->
         <section id="teachers" class="section-bg">
             <div class="container">
-                <h2>Наши педагоги</h2>
+                <h2 data-i18n-key="teachers.title">Наши педагоги</h2>
                 <div class="teachers-grid">
                     <div class="teacher-card fade-in">
                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1888&auto=format&fit=crop" alt="Teacher 1">
-                        <h4>Айжан Ахметова</h4>
-                        <p>Кандидат педагогических наук, учитель математики</p>
+                        <h4 data-i18n-key="teachers.t1.name">Айжан Ахметова</h4>
+                        <p data-i18n-key="teachers.t1.title">Кандидат педагогических наук, учитель математики</p>
                     </div>
                     <div class="teacher-card fade-in" style="transition-delay: 0.2s;">
                         <img src="https://images.unsplash.com/photo-1580894732444-8ecded7948b4?q=80&w=2070&auto=format&fit=crop" alt="Teacher 2">
-                        <h4>Майкл Джонсон</h4>
-                        <p>Носитель языка, сертификат CELTA, учитель английского</p>
+                        <h4 data-i18n-key="teachers.t2.name">Майкл Джонсон</h4>
+                        <p data-i18n-key="teachers.t2.title">Носитель языка, сертификат CELTA, учитель английского</p>
                     </div>
                     <div class="teacher-card fade-in" style="transition-delay: 0.4s;">
                         <img src="https://images.unsplash.com/photo-1594744800539-8376453955ce?q=80&w=1887&auto=format&fit=crop" alt="Teacher 3">
-                        <h4>Ернар Кайратов</h4>
-                        <p>Магистр наук, учитель физики и робототехники</p>
+                        <h4 data-i18n-key="teachers.t3.name">Ернар Кайратов</h4>
+                        <p data-i18n-key="teachers.t3.title">Магистр наук, учитель физики и робототехники</p>
                     </div>
                      <div class="teacher-card fade-in" style="transition-delay: 0.6s;">
                         <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=1887&auto=format&fit=crop" alt="Teacher 4">
-                        <h4>Ольга Васильева</h4>
-                        <p>Заслуженный деятель искусств, учитель музыки</p>
+                        <h4 data-i18n-key="teachers.t4.name">Ольга Васильева</h4>
+                        <p data-i18n-key="teachers.t4.title">Заслуженный деятель искусств, учитель музыки</p>
                     </div>
                 </div>
             </div>
@@ -731,13 +795,13 @@
         <!-- Контакты и поступление -->
         <section id="contact">
             <div class="container">
-                <h2>Контакты и поступление</h2>
+                <h2 data-i18n-key="contact.title">Контакты и поступление</h2>
                 <div class="contact-wrapper fade-in">
                     <div class="contact-info">
-                        <h3>Свяжитесь с нами</h3>
-                        <p>Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.</p>
+                        <h3 data-i18n-key="contact.info.title">Свяжитесь с нами</h3>
+                        <p data-i18n-key="contact.info.p1">Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.</p>
                         <ul>
-                            <li><i class="fas fa-map-marker-alt"></i> г. Астана, ул. Просвещения, 1</li>
+                            <li data-i18n-key="contact.info.address"><i class="fas fa-map-marker-alt"></i> г. Астана, ул. Просвещения, 1</li>
                             <li><i class="fas fa-phone"></i> +7 (7172) 123-45-67</li>
                             <li><i class="fas fa-envelope"></i> admissions@centralschool.kz</li>
                         </ul>
@@ -746,21 +810,21 @@
                         </div>
                     </div>
                     <div class="contact-form">
-                        <h3>Задать вопрос</h3>
+                        <h3 data-i18n-key="contact.form.title">Задать вопрос</h3>
                         <form id="main-contact-form" novalidate>
                             <div class="form-group">
-                                <input type="text" id="name" name="name" placeholder="Ваше имя" required>
-                                <div class="error-message">Пожалуйста, введите ваше имя.</div>
+                                <input type="text" id="name" name="name" placeholder="Ваше имя" required data-i18n-key="contact.form.name" data-i18n-key-placeholder>
+                                <div class="error-message" data-i18n-key="contact.form.errorName">Пожалуйста, введите ваше имя.</div>
                             </div>
                             <div class="form-group">
-                                <input type="email" id="email" name="email" placeholder="Ваш Email" required>
-                                <div class="error-message">Пожалуйста, введите корректный email.</div>
+                                <input type="email" id="email" name="email" placeholder="Ваш Email" required data-i18n-key="contact.form.email" data-i18n-key-placeholder>
+                                <div class="error-message" data-i18n-key="contact.form.errorEmail">Пожалуйста, введите корректный email.</div>
                             </div>
                             <div class="form-group">
-                                <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение" required></textarea>
-                                <div class="error-message">Пожалуйста, введите ваше сообщение.</div>
+                                <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение" required data-i18n-key="contact.form.message" data-i18n-key-placeholder></textarea>
+                                <div class="error-message" data-i18n-key="contact.form.errorMessage">Пожалуйста, введите ваше сообщение.</div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Отправить</button>
+                            <button type="submit" class="btn btn-primary" data-i18n-key="contact.form.submit">Отправить</button>
                         </form>
                     </div>
                 </div>
@@ -773,28 +837,28 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h4>Central School</h4>
-                    <p>Ведущее образовательное учреждение, формирующее будущее поколение лидеров.</p>
+                    <h4 data-i18n-key="footer.col1.title">Central School</h4>
+                    <p data-i18n-key="footer.col1.text">Ведущее образовательное учреждение, формирующее будущее поколение лидеров.</p>
                 </div>
                 <div class="footer-col">
-                    <h4>Быстрые ссылки</h4>
+                    <h4 data-i18n-key="footer.col2.title">Быстрые ссылки</h4>
                     <ul>
-                        <li><a href="#about">О школе</a></li>
-                        <li><a href="#programs">Программы</a></li>
-                        <li><a href="#achievements">Достижения</a></li>
-                        <li><a href="#contact">Контакты</a></li>
+                        <li><a href="#about" data-i18n-key="nav.about">О школе</a></li>
+                        <li><a href="#programs" data-i18n-key="nav.programs">Программы</a></li>
+                        <li><a href="#achievements" data-i18n-key="nav.achievements">Достижения</a></li>
+                        <li><a href="#contact" data-i18n-key="nav.contact">Контакты</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Контакты</h4>
+                    <h4 data-i18n-key="nav.contact">Контакты</h4>
                     <ul>
-                        <li>г. Астана, ул. Просвещения, 1</li>
+                        <li data-i18n-key="contact.info.address">г. Астана, ул. Просвещения, 1</li>
                         <li>+7 (7172) 123-45-67</li>
                         <li>info@centralschool.kz</li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Мы в соцсетях</h4>
+                    <h4 data-i18n-key="footer.col4.title">Мы в соцсетях</h4>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
@@ -804,7 +868,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Central School. Все права защищены.</p>
+                <p data-i18n-key="footer.copy">&copy; 2024 Central School. Все права защищены.</p>
             </div>
         </div>
     </footer>
@@ -813,24 +877,24 @@
     <div id="modal-primary" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>Программа начальной школы</h3>
-            <p>Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.</p>
+            <h3 data-i18n-key="modal.p1.title">Программа начальной школы</h3>
+            <p data-i18n-key="modal.p1.text">Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.</p>
             <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Начальная школа">
         </div>
     </div>
     <div id="modal-secondary" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>Программа средней и старшей школы</h3>
-            <p>В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.</p>
+            <h3 data-i18n-key="modal.p2.title">Программа средней и старшей школы</h3>
+            <p data-i18n-key="modal.p2.text">В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.</p>
             <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Средняя школа">
         </div>
     </div>
     <div id="modal-exams" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>Подготовка к ЕНТ и международным экзаменам</h3>
-            <p>Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов.</p>
+            <h3 data-i18n-key="modal.p3.title">Подготовка к ЕНТ и международным экзаменам</h3>
+            <p data-i18n-key="modal.p3.text">Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов.</p>
              <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Подготовка к экзаменам">
         </div>
     </div>
@@ -844,6 +908,217 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        const translations = {
+            ru: {
+                "title": "Central School - Образовательное Учреждение",
+                "lang.ru": "Русский",
+                "lang.kz": "Қазақша",
+                "nav.about": "О школе",
+                "nav.programs": "Программы",
+                "nav.achievements": "Достижения",
+                "nav.contact": "Контакты",
+                "nav.apply": "Поступить",
+                "hero.title": "Открываем двери в успешное будущее",
+                "hero.subtitle": "Инновационное образование, основанное на лучших мировых практиках и национальных традициях.",
+                "hero.btnPrograms": "Наши программы",
+                "hero.btnAbout": "Узнать больше",
+                "about.title": "Наша миссия — воспитать лидеров нового поколения",
+                "about.p1": "Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.",
+                "about.p2": "Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.",
+                "about.stat1": "Лет на рынке образования",
+                "about.stat2": "Счастливых учеников",
+                "about.stat3": "Выпускников",
+                "about.stat4": "% поступления в вузы",
+                "programs.title": "Образовательные программы",
+                "programs.card1.title": "Начальная школа",
+                "programs.card1.text": "Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.",
+                "common.details": "Подробнее",
+                "programs.card2.title": "Средняя и старшая школа",
+                "programs.card2.text": "Углубленное изучение предметов и профильная подготовка к будущей профессии.",
+                "programs.card3.title": "Подготовка к ЕНТ и IELTS",
+                "programs.card3.text": "Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.",
+                "achievements.title": "Достижения и признание",
+                "achievements.item1.title": "Топ-5 школ страны",
+                "achievements.item1.text": "Входим в пятерку лучших по результатам национальных рейтингов.",
+                "achievements.item2.title": "95% поступлений",
+                "achievements.item2.text": "Наши выпускники поступают в ведущие университеты мира.",
+                "achievements.item3.title": "Победители олимпиад",
+                "achievements.item3.text": "Ежегодно наши ученики занимают призовые места на олимпиадах.",
+                "achievements.item4.title": "Международная аккредитация",
+                "achievements.item4.text": "Наши программы соответствуют высоким мировым стандартам.",
+                "testimonials.title": "Что говорят о нас",
+                "testimonials.item1.quote": "\"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!\"",
+                "testimonials.item1.cite": "— Асем Муратова, родитель",
+                "testimonials.item2.quote": "\"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников.\"",
+                "testimonials.item2.cite": "— Арман Султанов, выпускник",
+                "testimonials.item3.quote": "\"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах.\"",
+                "testimonials.item3.cite": "— Елена Петрова, родитель",
+                "infrastructure.title": "Современная инфраструктура",
+                "teachers.title": "Наши педагоги",
+                "teachers.t1.name": "Айжан Ахметова",
+                "teachers.t1.title": "Кандидат педагогических наук, учитель математики",
+                "teachers.t2.name": "Майкл Джонсон",
+                "teachers.t2.title": "Носитель языка, сертификат CELTA, учитель английского",
+                "teachers.t3.name": "Ернар Кайратов",
+                "teachers.t3.title": "Магистр наук, учитель физики и робототехники",
+                "teachers.t4.name": "Ольга Васильева",
+                "teachers.t4.title": "Заслуженный деятель искусств, учитель музыки",
+                "contact.title": "Контакты и поступление",
+                "contact.info.title": "Свяжитесь с нами",
+                "contact.info.p1": "Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.",
+                "contact.info.address": "г. Астана, ул. Просвещения, 1",
+                "contact.form.title": "Задать вопрос",
+                "contact.form.name": "Ваше имя",
+                "contact.form.email": "Ваш Email",
+                "contact.form.message": "Ваше сообщение",
+                "contact.form.submit": "Отправить",
+                "contact.form.errorName": "Пожалуйста, введите ваше имя.",
+                "contact.form.errorEmail": "Пожалуйста, введите корректный email.",
+                "contact.form.errorMessage": "Пожалуйста, введите ваше сообщение.",
+                "contact.form.sending": "Отправка...",
+                "contact.form.success": "Сообщение успешно получено и сохранено!",
+                "contact.form.error": "Не удалось отправить сообщение. Попробуйте позже.",
+                "footer.col1.title": "Central School",
+                "footer.col1.text": "Ведущее образовательное учреждение, формирующее будущее поколение лидеров.",
+                "footer.col2.title": "Быстрые ссылки",
+                "footer.col4.title": "Мы в соцсетях",
+                "footer.copy": "© 2024 Central School. Все права защищены.",
+                "modal.p1.title": "Программа начальной школы",
+                "modal.p1.text": "Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.",
+                "modal.p2.title": "Программа средней и старшей школы",
+                "modal.p2.text": "В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.",
+                "modal.p3.title": "Подготовка к ЕНТ и международным экзаменам",
+                "modal.p3.text": "Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов."
+            },
+            kz: {
+                "title": "Central School - Білім беру мекемесі",
+                "lang.ru": "Орысша",
+                "lang.kz": "Қазақша",
+                "nav.about": "Мектеп туралы",
+                "nav.programs": "Бағдарламалар",
+                "nav.achievements": "Жетістіктер",
+                "nav.contact": "Байланыс",
+                "nav.apply": "Түсу",
+                "hero.title": "Табысты болашаққа есік ашамыз",
+                "hero.subtitle": "Ең үздік әлемдік тәжірибе мен ұлттық дәстүрлерге негізделген инновациялық білім.",
+                "hero.btnPrograms": "Біздің бағдарламалар",
+                "hero.btnAbout": "Толық ақпарат",
+                "about.title": "Біздің миссиямыз — жаңа ұрпақ көшбасшыларын тәрбиелеу",
+                "about.p1": "Central School – бұл жай ғана оқу орны емес, білімге және өзін-өзі дамытуға ұмтылатын бірдей ойлы адамдардың қауымдастығы. Біз 20 жылдан астам бұрын басталған тарихымызбен және сақтап келе жатқан дәстүрлерімізбен мақтанамыз.",
+                "about.p2": "Біздің құндылықтарымыз – академиялық адалдық, жеке тұлғаны құрметтеу, кемелдікке ұмтылу және әлеуметтік жауапкершілік. Біз әр оқушының өз әлеуетін ашуына мүмкіндік беретін орта құрамыз.",
+                "about.stat1": "Білім нарығындағы жылдар",
+                "about.stat2": "Бақытты оқушылар",
+                "about.stat3": "Түлектер",
+                "about.stat4": "% жоғары оқу орындарына түсу",
+                "programs.title": "Білім беру бағдарламалары",
+                "programs.card1.title": "Бастауыш мектеп",
+                "programs.card1.text": "Баланың дамуына кешенді көзқарас, алдағы оқуға берік іргетас қалайды.",
+                "common.details": "Толығырақ",
+                "programs.card2.title": "Орта және жоғары сынып",
+                "programs.card2.text": "Пәндерді терең оқып үйрену және болашақ мамандыққа бағдарлы дайындық.",
+                "programs.card3.title": "ҰБТ және IELTS-ке дайындық",
+                "programs.card3.text": "Жоғары балл және үздік жоғары оқу орындарына түсуді кепілдік ететін тиімді әдістемелер.",
+                "achievements.title": "Жетістіктер мен тану",
+                "achievements.item1.title": "Елдің ТОП-5 мектебі",
+                "achievements.item1.text": "Ұлттық рейтинг нәтижелері бойынша бес үздіктің қатарындамыз.",
+                "achievements.item2.title": "95% түсу көрсеткіші",
+                "achievements.item2.text": "Біздің түлектер әлемнің жетекші университеттеріне түседі.",
+                "achievements.item3.title": "Олимпиада жеңімпаздары",
+                "achievements.item3.text": "Жыл сайын біздің оқушыларымыз олимпиадаларда жүлделі орындарды иеленеді.",
+                "achievements.item4.title": "Халықаралық аккредитация",
+                "achievements.item4.text": "Біздің бағдарламалар жоғары әлемдік стандарттарға сәйкес келеді.",
+                "testimonials.title": "Біз туралы не дейді",
+                "testimonials.item1.quote": "\"Біздің баламыздың білімі үшін ең үздік шешім. Күшті мұғалімдер және керемет атмосфера. Рахмет, Central School!\"",
+                "testimonials.item1.cite": "— Асем Мұратова, ата-ана",
+                "testimonials.item2.quote": "\"Мен мектепке арман университетіме түсуге көмектескен білімдері үшін ризамын. Мұнда мен шынайы достар мен дәстүрші тапқан едім.\"",
+                "testimonials.item2.cite": "— Арман Сұлтанов, түлек",
+                "testimonials.item3.quote": "\"Әр оқушыға жеке көзқарас шынымен жұмыс істейді. Менің ұлым өзіне және өз күштеріне сенімді болды.\"",
+                "testimonials.item3.cite": "— Елена Петрова, ата-ана",
+                "infrastructure.title": "Заманауи инфрақұрылым",
+                "teachers.title": "Біздің педагогтар",
+                "teachers.t1.name": "Айжан Ахметова",
+                "teachers.t1.title": "Педагогика ғылымдарының кандидаты, математика мұғалімі",
+                "teachers.t2.name": "Майкл Джонсон",
+                "teachers.t2.title": "Тіл иесі, CELTA сертификаты, ағылшын тілі мұғалімі",
+                "teachers.t3.name": "Ернар Қайратов",
+                "teachers.t3.title": "Ғылым магистрі, физика және робототехника мұғалімі",
+                "teachers.t4.name": "Ольга Васильева",
+                "teachers.t4.title": "Еңбегі сіңген өнер қайраткері, музыка мұғалімі",
+                "contact.title": "Байланыстар және түсу",
+                "contact.info.title": "Бізбен байланысыңыз",
+                "contact.info.p1": "Біздің қабылдау комиссиясы барлық сұрақтарыңызға жауап беруге және түсу процесіне көмектесуге дайын.",
+                "contact.info.address": "Астана қаласы, Ағарту көшесі, 1",
+                "contact.form.title": "Сұрақ қою",
+                "contact.form.name": "Сіздің атыңыз",
+                "contact.form.email": "Сіздің Email",
+                "contact.form.message": "Сіздің хабарламаңыз",
+                "contact.form.submit": "Жіберу",
+                "contact.form.errorName": "Өтінемін, атыңызды енгізіңіз.",
+                "contact.form.errorEmail": "Өтінемін, дұрыс email енгізіңіз.",
+                "contact.form.errorMessage": "Өтінемін, хабарламаңызды енгізіңіз.",
+                "contact.form.sending": "Жіберілуде...",
+                "contact.form.success": "Хабарлама сәтті алынды және сақталды!",
+                "contact.form.error": "Хабарламаны жіберу мүмкін болмады. Кейінірек көріңіз.",
+                "footer.col1.title": "Central School",
+                "footer.col1.text": "Болашақ көшбасшылар ұрпағын қалыптастыратын жетекші білім беру мекемеси.",
+                "footer.col2.title": "Жылдам сілтемелер",
+                "footer.col4.title": "Біз әлеуметтік желілерде",
+                "footer.copy": "© 2024 Central School. Барлық құқықтар қорғалған.",
+                "modal.p1.title": "Бастауыш мектеп бағдарламасы",
+                "modal.p1.text": "Біздің 1-4 сыныптарға арналған бағдарламамыз жеке тұлғаның жан-жақты дамуына бағытталған. Біз ойын әдістемелерін, жобалық қызметті және жеке көзқарасты қолданамыз. Негізгі пәндерге математика, сауаттылық, әлемді тану, ағылшын тілі және шығармашылық пәндер кіреді.",
+                "modal.p2.title": "Орта және жоғары сынып бағдарламасы",
+                "modal.p2.text": "5-11 сыныптарда біз пәндерді терең оқып үйренуді және бағдарлы бағыттарды таңдау мүмкіндігін ұсынамыз: физика-математикалық, химия-биологиялық және гуманитарлық. Оқушылар олимпиадалар мен ғылыми жобаларға белсенді қатысады.",
+                "modal.p3.title": "ҰБТ және халықаралық емтихандарға дайындық",
+                "modal.p3.text": "Біздің ҰБТ, IELTS, TOEFL және SAT-қа дайындық курстары тәжірибелі әдіскерлер әзірлеген. Біз жүйелі көзқарасты, тұрақты сынақ тесттері мен қателерді талдауды кепілдендіреміз, бұл біздің оқушыларымызға максималды нәтижеге жетуге мүмкіндік береді."
+            }
+        };
+
+        const languageSwitcher = document.querySelector('.language-switcher');
+        const langButton = document.querySelector('.lang-button');
+        const currentLangSpan = document.querySelector('.current-lang');
+        const langOptions = document.querySelectorAll('.lang-option');
+
+        const setLanguage = (lang) => {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n-key]').forEach(element => {
+                const key = element.getAttribute('data-i18n-key');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.hasAttribute('data-i18n-key-placeholder')) {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+            // Update button text
+            currentLangSpan.textContent = lang.toUpperCase();
+            localStorage.setItem('language', lang);
+            languageSwitcher.classList.remove('active');
+        };
+
+        langButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            languageSwitcher.classList.toggle('active');
+        });
+
+        document.addEventListener('click', () => {
+            if (languageSwitcher.classList.contains('active')) {
+                languageSwitcher.classList.remove('active');
+            }
+        });
+
+        langOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedLang = option.getAttribute('data-lang');
+                setLanguage(selectedLang);
+            });
+        });
+
+        // Load saved language or default to 'ru'
+        const savedLang = localStorage.getItem('language') || 'ru';
+        setLanguage(savedLang);
 
         // --- Header Scroll Effect ---
         const header = document.getElementById('main-header');
