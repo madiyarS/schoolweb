@@ -5,25 +5,165 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавить новость - Панель администратора</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
-        .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 240px; background-color: #1e3a8a; color: white; padding-top: 20px; }
-        .sidebar h2 { text-align: center; color: white; margin-bottom: 2rem; }
-        .sidebar a { display: block; color: white; padding: 15px 20px; text-decoration: none; transition: background-color 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; }
-        .main-content { margin-left: 240px; padding: 2rem; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 1rem; margin-bottom: 2rem; }
-        .logout-btn { background: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
-        .logout-btn:hover { background: #c9302c; }
-        .form-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        input[type="text"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
-        textarea { resize: vertical; min-height: 200px; }
-        .submit-btn { background: #5cb85c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-        .submit-btn:hover { background: #4cae4c; }
-        .status-message { margin-top: 1rem; padding: 10px; border-radius: 4px; display: none; }
-        .status-message.success { background-color: #dff0d8; color: #3c763d; }
-        .status-message.error { background-color: #f2dede; color: #a94442; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            margin: 0; 
+            background-color: #f8f9fa; 
+            color: #333; 
+        }
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            width: 240px; 
+            background-color: #1e3a8a; 
+            color: white; 
+            padding-top: 20px; 
+        }
+        .sidebar h2 { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 2rem; 
+        }
+        .sidebar a { 
+            display: block; 
+            color: white; 
+            padding: 15px 20px; 
+            text-decoration: none; 
+            transition: background-color 0.3s; 
+        }
+        .sidebar a:hover, .sidebar a.active { 
+            background-color: #3b82f6; 
+        }
+        .main-content { 
+            margin-left: 240px; 
+            padding: 2rem; 
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        .logout-btn { 
+            background: #d9534f; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .logout-btn:hover { 
+            background: #c9302c; 
+        }
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group input[type="file"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .file-preview {
+            margin-top: 1rem;
+            display: none;
+        }
+        .file-preview img {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 6px;
+            border: 2px solid #e1e5e9;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 1rem;
+            display: none;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .form-note {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -33,75 +173,254 @@
         <a href="/admin/applications.html">Просмотр заявок</a>
         <a href="/admin/add_news.html" class="active">Добавить новость</a>
         <a href="/admin/news_list.html">Список новостей</a>
+        <a href="/admin/documents_list.html">Документы</a>
+
     </div>
 
     <div class="main-content">
         <div class="header">
             <h1>Добавить новость</h1>
-            <form action="/logout" method="post">
+            <form action="/admin/logout" method="post">
                 <button type="submit" class="logout-btn">Выйти</button>
             </form>
         </div>
+        
         <div class="form-container">
             <form id="add-news-form" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="title">Заголовок:</label>
+                    <label for="title">Заголовок новости:</label>
                     <input type="text" id="title" name="title" required>
+                    <div class="form-note">Рекомендуется использовать краткий и информативный заголовок</div>
                 </div>
+
                 <div class="form-group">
-                    <label for="content">Содержание:</label>
+                    <label for="content">Содержание новости:</label>
                     <textarea id="content" name="content" required></textarea>
+                    <div class="form-note">Опишите новость подробно, используйте абзацы для лучшей читаемости</div>
                 </div>
+
                 <div class="form-group">
-                    <label for="image">Изображение (загрузить файл):</label>
+                    <label for="image">Загрузить изображение:</label>
                     <input type="file" id="image" name="image" accept="image/*">
+                    <div class="form-note">Поддерживаемые форматы: JPG, PNG, GIF, WEBP. Максимальный размер: 10MB</div>
+                    
+                    <div id="image-preview" class="file-preview">
+                        <img id="preview-img" src="" alt="Предпросмотр">
+                    </div>
                 </div>
-                 <div class="form-group">
-                    <label for="image_url">Или URL изображения:</label>
-                    <input type="text" id="image_url" name="image_url">
+
+                <div class="form-group">
+                    <label for="image_url">Или укажите URL изображения:</label>
+                    <input type="url" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
+                    <div class="form-note">Если загружен файл, он будет иметь приоритет над URL</div>
                 </div>
-                <button type="submit" class="submit-btn">Опубликовать</button>
+
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    Опубликовать новость
+                </button>
+
+                <div class="progress-bar" id="upload-progress">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
             </form>
+
             <div id="status-message" class="status-message"></div>
         </div>
     </div>
 
     <script>
+        // Предпросмотр изображения при выборе файла
+        document.getElementById('image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+
+            if (file) {
+                // Проверка типа файла
+                if (!file.type.startsWith('image/')) {
+                    showStatus('Пожалуйста, выберите файл изображения', 'error');
+                    event.target.value = '';
+                    return;
+                }
+
+                // Проверка размера файла (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showStatus('Размер файла не должен превышать 10MB', 'error');
+                    event.target.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Очищаем URL поле при выборе файла
+                document.getElementById('image_url').value = '';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // Очистка файла при вводе URL
+        document.getElementById('image_url').addEventListener('input', function() {
+            if (this.value.trim()) {
+                const fileInput = document.getElementById('image');
+                fileInput.value = '';
+                document.getElementById('image-preview').style.display = 'none';
+            }
+        });
+
+        function showStatus(message, type) {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Автоматически скрываем через 5 секунд
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showProgress(show = true) {
+            const progressBar = document.getElementById('upload-progress');
+            const progressFill = document.getElementById('progress-fill');
+            
+            if (show) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+            } else {
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function updateProgress(percent) {
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = percent + '%';
+        }
+
+        // Обработка отправки формы
         document.getElementById('add-news-form').addEventListener('submit', async (event) => {
             event.preventDefault();
+            
             const form = event.target;
             const formData = new FormData(form);
-            const statusMessage = document.getElementById('status-message');
+            const submitBtn = document.getElementById('submit-btn');
 
-            statusMessage.style.display = 'none';
+            // Скрываем предыдущие сообщения
+            document.getElementById('status-message').style.display = 'none';
 
-            if (!formData.get('title') || !formData.get('content')) {
-                statusMessage.textContent = 'Заголовок и содержание не могут быть пустыми.';
-                statusMessage.className = 'status-message error';
-                statusMessage.style.display = 'block';
+            // Проверяем обязательные поля
+            const title = formData.get('title').trim();
+            const content = formData.get('content').trim();
+            
+            if (!title || !content) {
+                showStatus('Заголовок и содержание не могут быть пустыми.', 'error');
                 return;
             }
 
+            if (title.length < 5) {
+                showStatus('Заголовок должен содержать минимум 5 символов.', 'error');
+                return;
+            }
+
+            if (content.length < 20) {
+                showStatus('Содержание должно содержать минимум 20 символов.', 'error');
+                return;
+            }
+
+            // Отключаем кнопку отправки
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+            showProgress(true);
+
             try {
+                console.log('Отправляем данные на сервер...');
+                
+                // Имитация прогресса
+                updateProgress(10);
+
                 const response = await fetch('/admin/api/news', {
                     method: 'POST',
-                    body: formData // Отправляем FormData, заголовок Content-Type установится автоматически
+                    body: formData,
+                    credentials: 'same-origin'
                 });
 
+                updateProgress(80);
+                console.log('Получен ответ:', response.status, response.statusText);
+
                 if (response.ok) {
-                    statusMessage.textContent = 'Новость успешно добавлена!';
-                    statusMessage.className = 'status-message success';
-                    document.getElementById('add-news-form').reset();
+                    updateProgress(100);
+                    const result = await response.json();
+                    console.log('Результат:', result);
+                    
+                    showStatus('Новость успешно добавлена!', 'success');
+                    
+                    // Очищаем форму
+                    form.reset();
+                    document.getElementById('image-preview').style.display = 'none';
+                    
+                    // Предлагаем перейти к списку новостей
+                    setTimeout(() => {
+                        if (confirm('Новость добавлена! Хотите перейти к списку новостей?')) {
+                            window.location.href = '/admin/news_list.html';
+                        }
+                    }, 1500);
+                    
                 } else {
-                    const errorText = await response.text();
-                    throw new Error(errorText || 'Не удалось добавить новость.');
+                    let errorMessage = 'Не удалось добавить новость.';
+                    
+                    try {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    } catch (e) {
+                        console.error('Не удалось прочитать текст ошибки:', e);
+                    }
+                    
+                    if (response.status === 401) {
+                        showStatus('Необходимо войти в систему. Перенаправление...', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/admin/login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
+                    if (response.status === 413) {
+                        showStatus('Размер файла слишком большой. Максимальный размер: 10MB', 'error');
+                        return;
+                    }
+                    
+                    throw new Error(`HTTP ${response.status}: ${errorMessage}`);
                 }
+                
             } catch (error) {
-                statusMessage.textContent = `Ошибка: ${error.message}`;
-                statusMessage.className = 'status-message error';
+                console.error('Ошибка при отправке:', error);
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showStatus('Ошибка соединения с сервером. Проверьте подключение.', 'error');
+                } else {
+                    showStatus(`Ошибка: ${error.message}`, 'error');
+                }
+                
             } finally {
-                statusMessage.style.display = 'block';
-                setTimeout(() => statusMessage.style.display = 'none', 5000);
+                // Включаем кнопку обратно
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Опубликовать новость';
+                showProgress(false);
+            }
+        });
+
+        // Горячие клавиши
+        document.addEventListener('keydown', function(event) {
+            // Ctrl+Enter для отправки формы
+            if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('add-news-form').dispatchEvent(new Event('submit'));
             }
         });
     </script>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документы школы - Начальная школа Академия</title>
+    <link rel="icon" type="image/jpeg" href="photos/fav.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .documents-page {
+            padding-top: 100px;
+            min-height: 100vh;
+            background-color: var(--bg-light-gray);
+        }
+
+        .documents-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .documents-header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .documents-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-filter input,
+        .search-filter select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: var(--font-body);
+        }
+
+        .search-filter input {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .document-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .document-icon {
+            font-size: 3rem;
+            color: var(--accent-light-blue);
+            margin-bottom: 1rem;
+        }
+
+        .document-icon.pdf { color: #dc3545; }
+        .document-icon.word { color: #2b579a; }
+        .document-icon.excel { color: #217346; }
+        .document-icon.powerpoint { color: #d24726; }
+
+        .document-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .document-description {
+            color: var(--text-light-gray);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-light-gray);
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .document-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .document-meta i {
+            color: var(--accent-gold);
+            width: 16px;
+        }
+
+        .document-download {
+            background: var(--accent-light-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .document-download:hover {
+            background: var(--primary-dark-blue);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light-gray);
+        }
+
+        .no-documents {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light-gray);
+            font-style: italic;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-gold);
+            color: var(--primary-dark-blue);
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .documents-header h1 {
+                font-size: 2rem;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-filter input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="main-header">
+        <div class="container header-content">
+            <a href="/" class="logo">Академия<span>School</span></a>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="/#about" class="nav-link">О школе</a></li>
+                    <li><a href="/#programs" class="nav-link">Программы</a></li>
+                    <li><a href="/#achievements" class="nav-link">Достижения</a></li>
+                    <li><a href="/#teachers" class="nav-link">Педагоги</a></li>
+                    <li><a href="/#news" class="nav-link">Новости</a></li>
+                    <li><a href="/#contact" class="nav-link">Контакты</a></li>
+                    <li><a href="/documents.html" class="nav-link active">Документы</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/#contact" class="btn btn-primary">Поступить</a>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="documents-page">
+        <div class="documents-header">
+            <div class="container">
+                <h1><i class="fas fa-file-alt"></i> Документы школы</h1>
+                <p>Полезные материалы и документы для учеников и родителей</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Поиск документов...">
+                <select id="categoryFilter">
+                    <option value="">Все категории</option>
+                    <option value="Учебные материалы">Учебные материалы</option>
+                    <option value="Документы">Документы</option>
+                    <option value="Формы">Формы</option>
+                    <option value="Правила">Правила</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+
+            <div id="documentsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Загрузка документов...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Начальная школа Академия</h4>
+                    <p>Благоприятная и стимулирующая учебная среда для достижения успехов каждого ребёнка.</p>
+                    <p class="footer-founded">Основана в 2021 году</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Быстрые ссылки</h4>
+                    <ul>
+                        <li><a href="/#about">О школе</a></li>
+                        <li><a href="/#programs">Программы</a></li>
+                        <li><a href="/#achievements">Достижения</a></li>
+                        <li><a href="/#teachers">Педагоги</a></li>
+                        <li><a href="/#news">Новости</a></li>
+                        <li><a href="/#contact">Контакты</a></li>
+                        <li><a href="/documents.html"><strong>Документы школы</strong></a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <ul>
+                        <li>г. Астана, район Сарыарка, ул. Шыганак, 7</li>
+                        <li>+7 701 573 17 94</li>
+                        <li>school@akademia.kz</li>
+                        <li>Пн-Пт: 08:00 - 17:00</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="https://instagram.com/akademiakz.school" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ТОО «Начальная школа Академия». Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Делаем header видимым сразу
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('main-header');
+            if (header) {
+                header.classList.add('scrolled');
+            }
+        });
+
+        let allDocuments = [];
+
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return { icon: 'fa-file-pdf', class: 'pdf' };
+            if (fileType.includes('word') || fileType.includes('document')) return { icon: 'fa-file-word', class: 'word' };
+            if (fileType.includes('excel') || fileType.includes('spreadsheet')) return { icon: 'fa-file-excel', class: 'excel' };
+            if (fileType.includes('powerpoint') || fileType.includes('presentation')) return { icon: 'fa-file-powerpoint', class: 'powerpoint' };
+            return { icon: 'fa-file', class: '' };
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Не указана';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return 'Некорректная дата';
+            }
+        }
+
+        function renderDocuments(documents) {
+            const container = document.getElementById('documentsContainer');
+
+            if (!documents || documents.length === 0) {
+                container.innerHTML = `
+                    <div class="no-documents">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; color: #ddd;"></i>
+                        <p>Документы не найдены</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="documents-grid">
+                    ${documents.map(doc => {
+                        const fileIcon = getFileIcon(doc.file_type);
+                        return `
+                            <div class="document-card" onclick="downloadDocument(${doc.id})">
+                                <div class="category-badge">${doc.category || 'Без категории'}</div>
+                                <div class="document-icon ${fileIcon.class}">
+                                    <i class="fas ${fileIcon.icon}"></i>
+                                </div>
+                                <div class="document-title">${doc.title}</div>
+                                <div class="document-description">${doc.description || 'Без описания'}</div>
+                                <div class="document-meta">
+                                    <span><i class="fas fa-calendar"></i> ${formatDate(doc.created_at)}</span>
+                                    <span><i class="fas fa-file"></i> ${formatFileSize(doc.file_size)}</span>
+                                </div>
+                                <div class="document-download">
+                                    <i class="fas fa-download"></i>
+                                    <span>Скачать</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function loadDocuments() {
+            const container = document.getElementById('documentsContainer');
+            
+            try {
+                const response = await fetch('/api/documents');
+                if (!response.ok) throw new Error('Failed to load documents');
+                
+                allDocuments = await response.json() || [];
+                renderDocuments(allDocuments);
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                container.innerHTML = `
+                    <div class="no-documents">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem; color: #ef4444;"></i>
+                        <p>Ошибка загрузки документов</p>
+                    </div>
+                `;
+            }
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+
+            const performSearch = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const category = categoryFilter.value;
+
+                const filtered = allDocuments.filter(doc => {
+                    const matchesSearch = !searchTerm || 
+                        doc.title.toLowerCase().includes(searchTerm) ||
+                        (doc.description && doc.description.toLowerCase().includes(searchTerm));
+                    
+                    const matchesCategory = !category || doc.category === category;
+
+                    return matchesSearch && matchesCategory;
+                });
+
+                renderDocuments(filtered);
+            };
+
+            searchInput.addEventListener('input', performSearch);
+            categoryFilter.addEventListener('change', performSearch);
+        }
+
+        function downloadDocument(id) {
+            window.open(`/api/documents/${id}/download`, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDocuments();
+            setupSearch();
+        });
+    </script>
+</body>
+</html>

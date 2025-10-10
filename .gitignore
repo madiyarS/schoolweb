@@ -1,0 +1,6 @@
+school.db
+*.log
+public/uploads/*
+!public/uploads/.gitkeep
+.env
+.DS_Store

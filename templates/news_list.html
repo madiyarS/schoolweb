@@ -3,23 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список новостей - Панель администратора</title>
+    <title>Управление новостями - Панель администратора</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
-        .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 240px; background-color: #1e3a8a; color: white; padding-top: 20px; }
-        .sidebar h2 { text-align: center; color: white; margin-bottom: 2rem; }
-        .sidebar a { display: block; color: white; padding: 15px 20px; text-decoration: none; transition: background-color 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; }
-        .main-content { margin-left: 240px; padding: 2rem; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 1rem; margin-bottom: 2rem; }
-        .logout-btn { background: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            margin: 0; 
+            background-color: #f8f9fa; 
+            color: #333; 
+        }
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            width: 240px; 
+            background-color: #1e3a8a; 
+            color: white; 
+            padding-top: 20px; 
+        }
+        .sidebar h2 { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 2rem; 
+        }
+        .sidebar a { 
+            display: block; 
+            color: white; 
+            padding: 15px 20px; 
+            text-decoration: none; 
+            transition: background-color 0.3s; 
+        }
+        .sidebar a:hover, .sidebar a.active { 
+            background-color: #3b82f6; 
+        }
+        .main-content { 
+            margin-left: 240px; 
+            padding: 2rem; 
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .logout-btn { background: #d9534f; color: white; }
         .logout-btn:hover { background: #c9302c; }
-        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tbody tr:nth-child(even) { background-color: #f9f9f9; }
-        .edit-btn { background-color: #f0ad4e; color: white; padding: 5px 10px; border-radius: 3px; text-decoration: none; }
-        .edit-btn:hover { background-color: #ec971f; }
+        
+        .status-message {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .news-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        .news-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .news-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+        .news-content {
+            padding: 15px;
+        }
+        .news-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .news-excerpt {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .news-meta {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        .news-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .no-news {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            margin: 0;
+            color: #dc3545;
+        }
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close:hover {
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -29,69 +196,243 @@
         <a href="/admin/applications.html">Просмотр заявок</a>
         <a href="/admin/add_news.html">Добавить новость</a>
         <a href="/admin/news_list.html" class="active">Список новостей</a>
+        <a href="/admin/documents_list.html">Документы</a>
     </div>
 
     <div class="main-content">
         <div class="header">
-            <h1>Список новостей</h1>
-            <form action="/logout" method="post">
-                <button type="submit" class="logout-btn">Выйти</button>
-            </form>
+            <h1>Управление новостями</h1>
+            <div class="header-actions">
+                <a href="/admin/add_news.html" class="btn btn-primary">Добавить новость</a>
+                <button onclick="loadNews()" class="btn btn-success">Обновить</button>
+                <form action="/admin/logout" method="post" style="display: inline;">
+                    <button type="submit" class="btn logout-btn">Выйти</button>
+                </form>
+            </div>
         </div>
+
+        <div id="status-message" class="status-message"></div>
+
         <div id="news-container">
-            <p>Загрузка новостей...</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Заголовок</th>
-                        <th>Дата создания</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody id="news-table-body">
-                    <!-- Данные будут вставлены сюда -->
-                </tbody>
-            </table>
+            <div class="loading">Загрузка новостей...</div>
+        </div>
+    </div>
+
+    <!-- Modal для подтверждения удаления -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Подтверждение удаления</h3>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <p>Вы действительно хотите удалить эту новость?</p>
+            <p><strong id="deleteNewsTitle"></strong></p>
+            <div style="text-align: right; margin-top: 20px;">
+                <button onclick="closeDeleteModal()" class="btn btn-secondary" style="margin-right: 10px;">Отмена</button>
+                <button onclick="confirmDelete()" class="btn btn-danger">Удалить</button>
+            </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const tableBody = document.getElementById('news-table-body');
+        let newsToDelete = null;
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Не указана';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('ru-RU', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return 'Некорректная дата';
+            }
+        }
+
+        async function loadNews() {
             const container = document.getElementById('news-container');
+            container.innerHTML = '<div class="loading">Загрузка новостей...</div>';
+            
+            document.getElementById('status-message').style.display = 'none';
 
             try {
-                // Используем публичный API для получения списка новостей
-                const response = await fetch('/api/news');
+                console.log('Загружаем новости...');
+                
+                const response = await fetch('/api/news', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                });
+
+                console.log('Ответ сервера:', response.status, response.statusText);
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                const articles = await response.json();
 
-                container.querySelector('p').style.display = 'none';
+                const news = await response.json();
+                console.log('Полученные данные:', news);
+                console.log('Тип данных:', typeof news);
+                console.log('Является ли массивом:', Array.isArray(news));
 
-                if (articles && articles.length > 0) {
-                    articles.forEach(article => {
-                        const row = tableBody.insertRow();
-                        row.insertCell(0).textContent = article.id;
-                        row.insertCell(1).textContent = article.title;
-                        row.insertCell(2).textContent = new Date(article.created_at).toLocaleString('ru-RU');
-                        const actionsCell = row.insertCell(3);
-                        const editLink = document.createElement('a');
-                        editLink.href = `/admin/edit_news.html?id=${article.id}`;
-                        editLink.className = 'edit-btn';
-                        editLink.textContent = 'Редактировать';
-                        actionsCell.appendChild(editLink);
-                    });
-                } else {
-                    container.innerHTML = '<p>Новостей пока нет.</p>';
+                // Проверяем, что получили корректные данные
+                if (news === null || news === undefined) {
+                    console.log('Получен null/undefined');
+                    container.innerHTML = '<div class="no-news">Новостей пока нет</div>';
+                    showStatus('Новости отсутствуют', 'info');
+                    return;
                 }
+
+                // Проверяем, что это массив
+                if (!Array.isArray(news)) {
+                    console.log('Получен не массив:', news);
+                    throw new Error('Сервер вернул некорректные данные (не массив)');
+                }
+
+                console.log('Получено новостей:', news.length);
+
+                if (news.length === 0) {
+                    container.innerHTML = '<div class="no-news">Новостей пока нет</div>';
+                    showStatus('Новости отсутствуют', 'info');
+                    return;
+                }
+
+                // Создаем сетку новостей
+                const newsGrid = document.createElement('div');
+                newsGrid.className = 'news-grid';
+
+                news.forEach((article, index) => {
+                    console.log(`Обрабатываем новость ${index + 1}:`, article);
+                    
+                    const newsCard = document.createElement('div');
+                    newsCard.className = 'news-card';
+                    newsCard.setAttribute('data-news-id', article.id || '');
+                    newsCard.setAttribute('data-news-title', article.title || 'Без заголовка');
+                    
+                    const createdAt = formatDate(article.created_at);
+                    const excerpt = article.content ? 
+                        (article.content.length > 150 ? 
+                            article.content.substring(0, 150) + '...' : 
+                            article.content) : 
+                        'Содержание отсутствует';
+
+                    let imageHTML = '';
+                    if (article.image_url) {
+                        imageHTML = `<img src="${article.image_url}" alt="${article.title}" class="news-image" onerror="this.style.display='none'">`;
+                    }
+
+                    newsCard.innerHTML = `
+                        ${imageHTML}
+                        <div class="news-content">
+                            <div class="news-title">${article.title || 'Без заголовка'}</div>
+                            <div class="news-excerpt">${excerpt}</div>
+                            <div class="news-meta">Создано: ${createdAt}</div>
+                            <div class="news-actions">
+                                <button onclick="editNews(${article.id})" class="btn btn-primary">Редактировать</button>
+                                <button onclick="showDeleteModal(this)" class="btn btn-danger">Удалить</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    newsGrid.appendChild(newsCard);
+                });
+
+                container.innerHTML = '';
+                container.appendChild(newsGrid);
+                
+                showStatus(`Загружено ${news.length} новостей`, 'success');
 
             } catch (error) {
-                container.innerHTML = `<p style="color: red;">Ошибка при загрузке новостей: ${error.message}</p>`;
+                console.error('Ошибка загрузки новостей:', error);
+                container.innerHTML = `
+                    <div class="no-news">
+                        <strong>Ошибка загрузки новостей</strong><br>
+                        ${error.message}<br>
+                        <button onclick="loadNews()" class="btn btn-primary" style="margin-top: 15px;">Попробовать снова</button>
+                    </div>
+                `;
+                showStatus(`Ошибка загрузки: ${error.message}`, 'error');
             }
-        });
+        }
+
+        function editNews(id) {
+            window.location.href = `/admin/edit_news.html?id=${id}`;
+        }
+
+        function showDeleteModal(buttonElement) {
+            // Находим родительский элемент карточки новости
+            const newsCard = buttonElement.closest('.news-card');
+            const newsId = newsCard.getAttribute('data-news-id');
+            const newsTitle = newsCard.getAttribute('data-news-title');
+            
+            newsToDelete = newsId;
+            document.getElementById('deleteNewsTitle').textContent = newsTitle;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            newsToDelete = null;
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        async function confirmDelete() {
+            if (!newsToDelete) return;
+            
+            try {
+                console.log('Удаляем новость с ID:', newsToDelete);
+                
+                const response = await fetch(`/admin/api/news/${newsToDelete}`, {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Новость удалена:', result);
+                    
+                    showStatus('Новость успешно удалена', 'success');
+                    closeDeleteModal();
+                    
+                    // Перезагружаем список новостей
+                    loadNews();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка удаления новости:', error);
+                showStatus(`Ошибка удаления: ${error.message}`, 'error');
+                closeDeleteModal();
+            }
+        }
+
+        // Закрытие модала по клику вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeDeleteModal();
+            }
+        }
+
+        // Загружаем новости при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadNews);
     </script>
 </body>
 </html>

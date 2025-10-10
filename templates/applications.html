@@ -5,19 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заявки - Панель администратора</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
-        .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 240px; background-color: #1e3a8a; color: white; padding-top: 20px; }
-        .sidebar h2 { text-align: center; color: white; margin-bottom: 2rem; }
-        .sidebar a { display: block; color: white; padding: 15px 20px; text-decoration: none; transition: background-color 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; }
-        .main-content { margin-left: 240px; padding: 2rem; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 1rem; margin-bottom: 2rem; }
-        .logout-btn { background: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
-        .logout-btn:hover { background: #c9302c; }
-        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            margin: 0; 
+            background-color: #f8f9fa; 
+            color: #333; 
+        }
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            width: 240px; 
+            background-color: #1e3a8a; 
+            color: white; 
+            padding-top: 20px; 
+        }
+        .sidebar h2 { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 2rem; 
+        }
+        .sidebar a { 
+            display: block; 
+            color: white; 
+            padding: 15px 20px; 
+            text-decoration: none; 
+            transition: background-color 0.3s; 
+        }
+        .sidebar a:hover, .sidebar a.active { 
+            background-color: #3b82f6; 
+        }
+        .main-content { 
+            margin-left: 240px; 
+            padding: 2rem; 
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .refresh-btn:hover { 
+            background: #218838; 
+        }
+        .logout-btn { 
+            background: #d9534f; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .logout-btn:hover { 
+            background: #c9302c; 
+        }
+        .status-message {
+            padding: 10px;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-message.info {
+            background-color: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: white; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 12px 15px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f2f2f2; 
+            font-weight: 600;
+        }
+        tbody tr:nth-child(even) { 
+            background-color: #f9f9f9; 
+        }
+        tbody tr:hover {
+            background-color: #e8f4f8;
+        }
+        .message-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+        }
+        .message-cell:hover::after {
+            content: attr(title);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: normal;
+            width: 250px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 16px;
+            color: #666;
+        }
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -27,18 +159,26 @@
         <a href="/admin/applications.html" class="active">Просмотр заявок</a>
         <a href="/admin/add_news.html">Добавить новость</a>
         <a href="/admin/news_list.html">Список новостей</a>
+            <a href="/admin/documents_list.html">Документы</a>
+
     </div>
 
     <div class="main-content">
         <div class="header">
             <h1>Заявки с сайта</h1>
-            <form action="/logout" method="post">
-                <button type="submit" class="logout-btn">Выйти</button>
-            </form>
+            <div>
+                <button onclick="loadApplications()" class="refresh-btn">Обновить</button>
+                <form action="/admin/logout" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">Выйти</button>
+                </form>
+            </div>
         </div>
+
+        <div id="status-message" class="status-message"></div>
+
         <div id="applications-container">
-            <p>Загрузка заявок...</p>
-            <table>
+            <div class="loading">Загрузка заявок...</div>
+            <table style="display: none;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -46,7 +186,7 @@
                         <th>Email</th>
                         <th>Телефон</th>
                         <th>Сообщение</th>
-                        <th>Дата</th>
+                        <th>Дата создания</th>
                     </tr>
                 </thead>
                 <tbody id="applications-table-body">
@@ -57,37 +197,142 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const tableBody = document.getElementById('applications-table-body');
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            // Автоматически скрываем сообщение через 5 секунд
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Не указана';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('ru-RU', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return 'Некорректная дата';
+            }
+        }
+
+        async function loadApplications() {
             const container = document.getElementById('applications-container');
+            const table = container.querySelector('table');
+            const loading = container.querySelector('.loading');
+            const tableBody = document.getElementById('applications-table-body');
+
+            // Показываем индикатор загрузки
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            
+            // Очищаем предыдущие сообщения
+            document.getElementById('status-message').style.display = 'none';
 
             try {
-                const response = await fetch('/admin/api/applications');
+                console.log('Отправляем запрос на /admin/api/applications...');
+                
+                const response = await fetch('/admin/api/applications', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin' // Включаем cookies для сессии
+                });
+
+                console.log('Получен ответ:', response.status, response.statusText);
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.status === 401) {
+                        showStatus('Необходимо войти в систему. Перенаправление...', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/admin/login.html';
+                        }, 2000);
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+
                 const applications = await response.json();
+                console.log('Полученные данные:', applications);
 
-                container.querySelector('p').style.display = 'none'; // Скрыть "Загрузка..."
+                // Скрываем индикатор загрузки
+                loading.style.display = 'none';
 
-                if (applications && applications.length > 0) {
-                    applications.forEach(app => {
-                        const row = tableBody.insertRow();
-                        row.insertCell(0).textContent = app.ID;
-                        row.insertCell(1).textContent = app.Name;
-                        row.insertCell(2).textContent = app.Email;
-                        row.insertCell(3).textContent = app.Phone;
-                        row.insertCell(4).textContent = app.Message;
-                        row.insertCell(5).textContent = new Date(app.CreatedAt).toLocaleString('ru-RU');
-                    });
+                // Очищаем таблицу
+                tableBody.innerHTML = '';
+
+                if (!applications || applications.length === 0) {
+                    showStatus('Заявки отсутствуют', 'info');
+                    tableBody.innerHTML = '<tr><td colspan="6" class="no-data">Заявок пока нет</td></tr>';
                 } else {
-                    container.innerHTML = '<p>Новых заявок нет.</p>';
+                    applications.forEach((app, index) => {
+                        const row = tableBody.insertRow();
+                        
+                        // Обратите внимание на использование маленьких букв для свойств JSON
+                        row.insertCell(0).textContent = app.id || 'N/A';
+                        row.insertCell(1).textContent = app.name || 'Не указано';
+                        row.insertCell(2).textContent = app.email || 'Не указано';
+                        row.insertCell(3).textContent = app.phone || 'Не указано';
+                        
+                        // Особая обработка для сообщения с обрезкой
+                        const messageCell = row.insertCell(4);
+                        const fullMessage = app.message || 'Сообщение отсутствует';
+                        messageCell.className = 'message-cell';
+                        messageCell.textContent = fullMessage.length > 50 ? fullMessage.substring(0, 50) + '...' : fullMessage;
+                        messageCell.title = fullMessage;
+                        
+                        row.insertCell(5).textContent = formatDate(app.created_at);
+                        
+                        // Добавляем небольшую анимацию появления строк
+                        row.style.opacity = '0';
+                        setTimeout(() => {
+                            row.style.transition = 'opacity 0.3s ease';
+                            row.style.opacity = '1';
+                        }, index * 50);
+                    });
+                    
+                    showStatus(`Успешно загружено ${applications.length} заявок`, 'success');
                 }
+
+                // Показываем таблицу
+                table.style.display = 'table';
 
             } catch (error) {
-                container.innerHTML = `<p style="color: red;">Ошибка при загрузке заявок: ${error.message}</p>`;
+                console.error('Ошибка при загрузке заявок:', error);
+                
+                loading.style.display = 'none';
+                showStatus(`Ошибка загрузки: ${error.message}`, 'error');
+                
+                // Показываем таблицу с сообщением об ошибке
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #d9534f; padding: 2rem;">
+                    <strong>Ошибка загрузки данных</strong><br>
+                    ${error.message}<br>
+                    <button onclick="loadApplications()" style="margin-top: 10px; padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Попробовать снова
+                    </button>
+                </td></tr>`;
+                table.style.display = 'table';
             }
+        }
+
+        // Загружаем заявки при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            loadApplications();
         });
+
+        // Обновляем заявки каждые 30 секунд
+        setInterval(loadApplications, 30000);
     </script>
 </body>
 </html>

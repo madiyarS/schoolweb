@@ -3,620 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n-key="title">Central School - Образовательное Учреждение</title>
+    <title data-i18n-key="title">Начальная школа Академия - Астана</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="photos/fav.jpeg">
+    <link rel="shortcut icon" type="image/jpeg" href="photos/fav.jpeg">
+    <link rel="apple-touch-icon" href="photos/fav.jpeg">
 
     <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <style>
-        /* CSS Reset and Basic Setup */
-        :root {
-            --primary-dark-blue: #1e3a8a;
-            --primary-white: #ffffff;
-            --accent-gold: #fbbf24;
-            --accent-light-blue: #3b82f6;
-            --bg-light-gray: #f8fafc;
-            --text-dark-gray: #1f2937;
-            --text-light-gray: #6b7280;
-            --font-header: 'Poppins', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
-        }
-
-        body {
-            font-family: var(--font-body);
-            color: var(--text-dark-gray);
-            background-color: var(--primary-white);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 0 1.5rem;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-header);
-            font-weight: 700;
-            color: var(--primary-dark-blue);
-            line-height: 1.2;
-        }
-
-        h1 { font-size: 3rem; }
-        h2 { font-size: 2.25rem; margin-bottom: 2rem; text-align: center; }
-        h3 { font-size: 1.5rem; margin-bottom: 1rem; }
-        p { margin-bottom: 1rem; color: var(--text-light-gray); }
-        a { text-decoration: none; color: var(--accent-light-blue); }
-        section { padding: 6rem 0; }
-        .section-bg { background-color: var(--bg-light-gray); }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-md);
-            font-family: var(--font-header);
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-gold);
-            color: var(--primary-dark-blue);
-        }
-        .btn-primary:hover {
-            background-color: #facc15;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary-white);
-            border-color: var(--primary-white);
-        }
-        .btn-secondary:hover {
-            background-color: var(--primary-white);
-            color: var(--primary-dark-blue);
-        }
-
-        /* Glassmorphism effect */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-lg);
-        }
-
-        /* Scroll Animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Header */
-        #main-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 1rem 0;
-            transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
-        }
-        #main-header.scrolled {
-            background-color: rgba(30, 58, 138, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 0;
-            box-shadow: var(--shadow-md);
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-family: var(--font-header);
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-white);
-        }
-        .logo span { color: var(--accent-gold); }
-
-        .nav-menu ul {
-            display: flex;
-            list-style: none;
-        }
-        .nav-menu li { margin-left: 2rem; }
-        .nav-menu a {
-            color: var(--primary-white);
-            font-weight: 500;
-            position: relative;
-            padding-bottom: 0.25rem;
-        }
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent-gold);
-            transition: width 0.3s ease;
-        }
-        .nav-menu a:hover::after, .nav-menu a.active::after { width: 100%; }
-
-        .header-actions { display: flex; align-items: center; gap: 1rem; }
-        .mobile-menu-toggle { display: none; color: white; font-size: 1.5rem; cursor: pointer; }
-
-        /* Language Switcher */
-        .language-switcher {
-            position: relative;
-        }
-        .lang-button {
-            background: transparent;
-            border: 1px solid var(--primary-white);
-            color: var(--primary-white);
-            font-family: var(--font-body);
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            transition: background-color 0.3s ease;
-        }
-        .lang-button:hover {
-             background-color: rgba(255, 255, 255, 0.1);
-        }
-        .lang-button .fa-chevron-down {
-            transition: transform 0.3s ease;
-            font-size: 0.8rem;
-        }
-        .language-switcher.active .lang-button .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-        .lang-dropdown {
-            display: none;
-            position: absolute;
-            top: 150%;
-            right: 0;
-            background-color: var(--primary-white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            list-style: none;
-            padding: 0.5rem 0;
-            z-index: 10;
-            min-width: 120px;
-            overflow: hidden;
-        }
-        .language-switcher.active .lang-dropdown {
-            display: block;
-        }
-        .lang-option {
-            display: block;
-            padding: 0.5rem 1.5rem;
-            color: var(--text-dark-gray);
-            transition: background-color 0.2s ease;
-            font-size: 0.9rem;
-        }
-        .lang-option:hover {
-            background-color: var(--bg-light-gray);
-        }
-
-        /* Hero Section */
-        #hero {
-            color: var(--primary-white);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 0 1.5rem;
-            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-            position: relative;
-        }
-        .hero-content {
-            max-width: 800px;
-        }
-        .hero-content h1 {
-            font-size: 3.5rem;
-            color: var(--primary-white);
-            margin-bottom: 1rem;
-        }
-        .hero-content .subtitle {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            font-weight: 400;
-            opacity: 0.9;
-        }
-        .hero-content .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        /* About Section */
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-        .about-image { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-            text-align: center;
-        }
-        .stat-item .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-light-blue);
-        }
-        .stat-item .stat-label { font-weight: 500; }
-
-        /* Programs Section */
-        .programs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        .program-card {
-            background: var(--primary-white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .program-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-        }
-        .program-card-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .program-card-content { padding: 1.5rem; }
-        .program-card-content h3 { color: var(--primary-dark-blue); }
-        .program-card-content .btn { margin-top: 1rem; }
-
-        /* Achievements Section */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        .achievement-item {
-            text-align: center;
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-            border-radius: var(--radius-lg);
-            transition: all 0.3s ease;
-        }
-        .achievement-item:hover {
-            border-color: var(--accent-light-blue);
-            background-color: var(--primary-white);
-        }
-        .achievement-item .icon {
-            font-size: 3rem;
-            color: var(--accent-gold);
-            margin-bottom: 1rem;
-        }
-
-        /* Testimonials Section */
-        .testimonial-carousel {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-        .testimonial-slider {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-        }
-        .testimonial {
-            flex: 0 0 100%;
-            padding: 2rem;
-            text-align: center;
-        }
-        .testimonial blockquote {
-            font-size: 1.1rem;
-            font-style: italic;
-            margin-bottom: 1rem;
-        }
-        .testimonial cite {
-            font-weight: 600;
-            color: var(--primary-dark-blue);
-        }
-        .carousel-dots {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .dot {
-            cursor: pointer;
-            height: 12px;
-            width: 12px;
-            margin: 0 5px;
-            background-color: #ccc;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-        .dot.active { background-color: var(--accent-light-blue); }
-
-        /* Infrastructure Section */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-        .gallery-item {
-            overflow: hidden;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            position: relative;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.4s ease;
-        }
-        .gallery-item:hover img { transform: scale(1.1); }
-        .gallery-item .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(30, 58, 138, 0.7);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .gallery-item:hover .overlay { opacity: 1; }
-
-        /* Teachers Section */
-        .teachers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        .teacher-card { text-align: center; }
-        .teacher-card img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            border: 4px solid var(--accent-gold);
-            box-shadow: var(--shadow-md);
-        }
-        .teacher-card h4 { margin-bottom: 0.25rem; }
-
-        /* News Section */
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-        .news-card {
-            background: var(--primary-white);
-            border: 1px solid #e5e7eb;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .news-card-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
-        .news-card-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-        }
-        .news-card-footer {
-            padding: 1rem 1.5rem;
-            background: var(--bg-light-gray);
-            font-size: 0.875rem;
-            color: var(--text-light-gray);
-            border-top: 1px solid #e5e7eb;
-        }
-
-
-        /* Contact Section */
-        .contact-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 3rem;
-            background: var(--primary-white);
-            padding: 3rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-        }
-        .contact-info h3, .contact-form h3 {
-            margin-top: 0;
-            text-align: left;
-        }
-        .contact-info ul { list-style: none; }
-        .contact-info li { display: flex; align-items: center; margin-bottom: 1rem; }
-        .contact-info i {
-            color: var(--accent-light-blue);
-            font-size: 1.25rem;
-            width: 30px;
-        }
-        .map-container {
-            margin-top: 2rem;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            height: 250px;
-        }
-        .map-container iframe { width: 100%; height: 100%; border: 0; }
-
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: var(--radius-md);
-            font-family: var(--font-body);
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent-light-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-        .error-message {
-            color: #ef4444;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--primary-dark-blue);
-            color: var(--primary-white);
-            padding: 4rem 0 2rem;
-        }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        .footer-col h4 { color: var(--accent-gold); margin-bottom: 1rem; }
-        .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 0.5rem; }
-        .footer-col a { color: #d1d5db; transition: color 0.3s ease; }
-        .footer-col a:hover { color: var(--primary-white); }
-        .social-links a {
-            display: inline-block;
-            color: var(--primary-white);
-            font-size: 1.5rem;
-            margin-right: 1rem;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-        .social-links a:hover { color: var(--accent-gold); transform: translateY(-2px); }
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.875rem;
-            color: #d1d5db;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-        }
-        .modal-content {
-            background-color: var(--primary-white);
-            margin: 10% auto;
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            max-width: 600px;
-            position: relative;
-            animation: slide-down 0.5s ease;
-        }
-        @keyframes slide-down {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .close-modal {
-            color: var(--text-light-gray);
-            position: absolute;
-            top: 1rem; right: 1.5rem;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close-modal:hover { color: var(--text-dark-gray); }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .about-grid, .contact-wrapper { grid-template-columns: 1fr; }
-            .header-content { padding: 0 1.5rem; }
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .hero-content h1 { font-size: 2.8rem; }
-            h2 { font-size: 1.8rem; }
-            section { padding: 4rem 0; }
-
-            .nav-menu {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 70%;
-                height: 100vh;
-                background-color: var(--primary-dark-blue);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transition: right 0.5s ease-in-out;
-                box-shadow: var(--shadow-lg);
-            }
-            .nav-menu.active { right: 0; }
-            .nav-menu ul { flex-direction: column; }
-            .nav-menu li { margin: 1.5rem 0; }
-            .mobile-menu-toggle { display: block; z-index: 1001; }
-        }
-    </style>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Шапка (Header) -->
+    <!-- Header -->
     <header id="main-header">
         <div class="container header-content">
-            <a href="#hero" class="logo">Central<span>School</span></a>
+            <a href="#hero" class="logo">Академия<span>School</span></a>
             <nav class="nav-menu">
                 <ul>
                     <li><a href="#about" class="nav-link" data-i18n-key="nav.about">О школе</a></li>
                     <li><a href="#programs" class="nav-link" data-i18n-key="nav.programs">Программы</a></li>
                     <li><a href="#achievements" class="nav-link" data-i18n-key="nav.achievements">Достижения</a></li>
+                    <li><a href="#teachers" class="nav-link" data-i18n-key="nav.teachers">Педагоги</a></li>
                     <li><a href="#news" class="nav-link" data-i18n-key="nav.news">Новости</a></li>
                     <li><a href="#contact" class="nav-link" data-i18n-key="nav.contact">Контакты</a></li>
                 </ul>
@@ -631,6 +45,7 @@
                     <ul class="lang-dropdown">
                         <li><a href="#" class="lang-option" data-lang="ru" data-i18n-key="lang.ru">Русский</a></li>
                         <li><a href="#" class="lang-option" data-lang="kz" data-i18n-key="lang.kz">Қазақша</a></li>
+                        <li><a href="#" class="lang-option" data-lang="en" data-i18n-key="lang.en">English</a></li>
                     </ul>
                 </div>
                 <div class="mobile-menu-toggle">
@@ -641,11 +56,11 @@
     </header>
 
     <main>
-        <!-- Главный баннер (Hero Section) -->
+        <!-- Hero Section -->
         <section id="hero">
             <div class="hero-content fade-in">
-                <h1 data-i18n-key="hero.title">Открываем двери в успешное будущее</h1>
-                <p class="subtitle" data-i18n-key="hero.subtitle">Инновационное образование, основанное на лучших мировых практиках и национальных традициях.</p>
+                <h1 data-i18n-key="hero.title">Начальная школа Академия</h1>
+                <p class="subtitle" data-i18n-key="hero.subtitle">Благоприятная среда для академических и личных успехов каждого ребёнка</p>
                 <div class="cta-buttons">
                     <a href="#programs" class="btn btn-primary" data-i18n-key="hero.btnPrograms">Наши программы</a>
                     <a href="#about" class="btn btn-secondary" data-i18n-key="hero.btnAbout">Узнать больше</a>
@@ -653,223 +68,261 @@
             </div>
         </section>
 
-        <!-- О школе (About) -->
+        <!-- About Section -->
         <section id="about" class="container">
             <div class="about-grid fade-in">
                 <div class="about-text">
-                    <h2 data-i18n-key="about.title">Наша миссия — воспитать лидеров нового поколения</h2>
-                    <p data-i18n-key="about.p1">Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.</p>
-                    <p data-i18n-key="about.p2">Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.</p>
+                    <h2 data-i18n-key="about.title">Наша миссия</h2>
+                    <p data-i18n-key="about.mission">Мы создадим благоприятную и стимулирующую учебную среду для достижения академических и личных успехов каждого ребёнка.</p>
+                    
+                    <h3 data-i18n-key="about.values.title">Наши ценности:</h3>
+                    <ul class="values-list">
+                        <li data-i18n-key="about.values.v1"><i class="fas fa-check-circle"></i> Обучение, ориентированное на каждого ученика</li>
+                        <li data-i18n-key="about.values.v2"><i class="fas fa-check-circle"></i> Трудолюбие и дух сотрудничества</li>
+                        <li data-i18n-key="about.values.v3"><i class="fas fa-check-circle"></i> Самоуважение и уважение к другим</li>
+                        <li data-i18n-key="about.values.v4"><i class="fas fa-check-circle"></i> Мы учим быть ответственным — за свой выбор, за свой успех</li>
+                        <li data-i18n-key="about.values.v5"><i class="fas fa-check-circle"></i> Поддержание семейных ценностей</li>
+                    </ul>
                 </div>
                 <div class="about-image-container">
-                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop" alt="Студенты в кампусе" class="about-image">
+                    <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" alt="Дети в школе" class="about-image">
                 </div>
             </div>
+            
             <div class="stats-grid fade-in">
                 <div class="stat-item">
-                    <div class="stat-number" data-target="20">0</div>
-                    <div class="stat-label" data-i18n-key="about.stat1">Лет на рынке образования</div>
+                    <div class="stat-number" data-target="4">0</div>
+                    <div class="stat-label" data-i18n-key="about.stat1">Года работы</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="1500">0</div>
-                    <div class="stat-label" data-i18n-key="about.stat2">Счастливых учеников</div>
+                    <div class="stat-number" data-target="100">0</div>
+                    <div class="stat-label" data-i18n-key="about.stat2">Учеников</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="5000">0</div>
-                    <div class="stat-label" data-i18n-key="about.stat3">Выпускников</div>
+                    <div class="stat-number" data-target="8">0</div>
+                    <div class="stat-label" data-i18n-key="about.stat3">Педагогов</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="95">0</div>
-                    <div class="stat-label" data-i18n-key="about.stat4">% поступления в вузы</div>
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-label" data-i18n-key="about.stat4">Учеников в классе</div>
                 </div>
             </div>
         </section>
 
-        <!-- Образовательные программы -->
+        <!-- Programs Section -->
         <section id="programs" class="section-bg">
             <div class="container">
                 <h2 data-i18n-key="programs.title">Образовательные программы</h2>
+                <p class="section-subtitle" data-i18n-key="programs.subtitle">Начальная школа для детей 1-4 классов</p>
+                
                 <div class="programs-grid">
                     <div class="program-card fade-in">
-                        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" alt="Начальная школа" class="program-card-img">
-                        <div class="program-card-content">
-                            <h3 data-i18n-key="programs.card1.title">Начальная школа</h3>
-                            <p data-i18n-key="programs.card1.text">Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.</p>
-                            <button class="btn btn-primary open-modal" data-modal-id="modal-primary" data-i18n-key="common.details">Подробнее</button>
+                        <div class="program-icon">
+                            <i class="fas fa-calculator"></i>
                         </div>
+                        <h3 data-i18n-key="programs.card1.title">Математика на английском</h3>
+                        <p data-i18n-key="programs.card1.text">Уникальная программа изучения математики на английском языке для развития билингвального мышления.</p>
                     </div>
+                    
+                    <div class="program-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="program-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 data-i18n-key="programs.card2.title">Развитие навыков обучения</h3>
+                        <p data-i18n-key="programs.card2.text">Learning how to learn — обучение навыкам самообразования и развитие эмоционального интеллекта.</p>
+                    </div>
+                    
                     <div class="program-card fade-in" style="transition-delay: 0.2s;">
-                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="Средняя школа" class="program-card-img">
-                        <div class="program-card-content">
-                            <h3 data-i18n-key="programs.card2.title">Средняя и старшая школа</h3>
-                            <p data-i18n-key="programs.card2.text">Углубленное изучение предметов и профильная подготовка к будущей профессии.</p>
-                             <button class="btn btn-primary open-modal" data-modal-id="modal-secondary" data-i18n-key="common.details">Подробнее</button>
+                        <div class="program-icon">
+                            <i class="fas fa-book-reader"></i>
                         </div>
+                        <h3 data-i18n-key="programs.card3.title">Основная программа</h3>
+                        <p data-i18n-key="programs.card3.text">Все основные предметы начальной школы с индивидуальным подходом к каждому ученику.</p>
                     </div>
-                    <div class="program-card fade-in" style="transition-delay: 0.4s;">
-                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" alt="Подготовка к экзаменам" class="program-card-img">
-                        <div class="program-card-content">
-                            <h3 data-i18n-key="programs.card3.title">Подготовка к ЕНТ и IELTS</h3>
-                            <p data-i18n-key="programs.card3.text">Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.</p>
-                             <button class="btn btn-primary open-modal" data-modal-id="modal-exams" data-i18n-key="common.details">Подробнее</button>
+                </div>
+
+                <div class="additional-activities">
+                    <h3 data-i18n-key="programs.activities.title">Дополнительные активности</h3>
+                    <div class="activities-list">
+                        <div class="activity-item fade-in">
+                            <i class="fas fa-chess"></i>
+                            <span data-i18n-key="programs.activities.chess">Шахматы</span>
+                        </div>
+                        <div class="activity-item fade-in" style="transition-delay: 0.1s;">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n-key="programs.activities.robotics">Робототехника</span>
+                        </div>
+                        <div class="activity-item fade-in" style="transition-delay: 0.2s;">
+                            <i class="fas fa-music"></i>
+                            <span data-i18n-key="programs.activities.vocal">Вокал</span>
+                        </div>
+                        <div class="activity-item fade-in" style="transition-delay: 0.3s;">
+                            <i class="fas fa-compact-disc"></i>
+                            <span data-i18n-key="programs.activities.dance">Танцы</span>
+                        </div>
+                        <div class="activity-item fade-in" style="transition-delay: 0.4s;">
+                            <i class="fas fa-calculator"></i>
+                            <span data-i18n-key="programs.activities.mental">Ментальная арифметика</span>
+                        </div>
+                        <div class="activity-item fade-in" style="transition-delay: 0.5s;">
+                            <i class="fas fa-theater-masks"></i>
+                            <span data-i18n-key="programs.activities.acting">Актерское мастерство</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Достижения и признание -->
+        <!-- Achievements Section -->
         <section id="achievements">
             <div class="container">
-                <h2 data-i18n-key="achievements.title">Достижения и признание</h2>
+                <h2 data-i18n-key="achievements.title">Достижения наших учеников</h2>
+                <p class="section-subtitle" data-i18n-key="achievements.subtitle">15 призовых мест на олимпиадах за последние 3 года</p>
+                
                 <div class="achievements-grid">
-                    <div class="achievement-item fade-in">
-                        <div class="icon"><i class="fas fa-award"></i></div>
-                        <h3 data-i18n-key="achievements.item1.title">Топ-5 школ страны</h3>
-                        <p data-i18n-key="achievements.item1.text">Входим в пятерку лучших по результатам национальных рейтингов.</p>
+                    <div class="achievement-card fade-in">
+                        <div class="achievement-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <h4 data-i18n-key="achievements.math.title">Математические олимпиады</h4>
+                        <p data-i18n-key="achievements.math.text">Скорняков Всеволод — 2 место на городской олимпиаде по математике среди школьников</p>
                     </div>
-                    <div class="achievement-item fade-in" style="transition-delay: 0.2s;">
-                        <div class="icon"><i class="fas fa-user-graduate"></i></div>
-                        <h3 data-i18n-key="achievements.item2.title">95% поступлений</h3>
-                        <p data-i18n-key="achievements.item2.text">Наши выпускники поступают в ведущие университеты мира.</p>
+                    
+                    <div class="achievement-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h4 data-i18n-key="achievements.abay.title">«Абаевские чтения»</h4>
+                        <p data-i18n-key="achievements.abay.text">Республиканский конкурс: Марат Альтаир — 1 место, Кононов Иван — 2 место</p>
                     </div>
-                    <div class="achievement-item fade-in" style="transition-delay: 0.4s;">
-                        <div class="icon"><i class="fas fa-trophy"></i></div>
-                        <h3 data-i18n-key="achievements.item3.title">Победители олимпиад</h3>
-                        <p data-i18n-key="achievements.item3.text">Ежегодно наши ученики занимают призовые места на олимпиадах.</p>
+                    
+                    <div class="achievement-card fade-in" style="transition-delay: 0.2s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h4 data-i18n-key="achievements.akbota.title">«Акбота»</h4>
+                        <p data-i18n-key="achievements.akbota.text">Республиканский уровень: Кононов Иван — 1 место, Тургумбаева Севиль — 3 место, Кафеджис Владислав — 1 место</p>
                     </div>
-                    <div class="achievement-item fade-in" style="transition-delay: 0.6s;">
-                        <div class="icon"><i class="fas fa-certificate"></i></div>
-                        <h3 data-i18n-key="achievements.item4.title">Международная аккредитация</h3>
-                        <p data-i18n-key="achievements.item4.text">Наши программы соответствуют высоким мировым стандартам.</p>
+                    
+                    <div class="achievement-card fade-in" style="transition-delay: 0.3s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4 data-i18n-key="achievements.kangaroo.title">«Кенгуру-математика»</h4>
+                        <p data-i18n-key="achievements.kangaroo.text">Республиканский уровень: Проскрякова Лена — 1 место и многие другие призёры</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Отзывы -->
-        <section id="testimonials" class="section-bg">
-            <div class="container">
-                <h2 data-i18n-key="testimonials.title">Что говорят о нас</h2>
-                <div class="testimonial-carousel fade-in">
-                    <div class="testimonial-slider">
-                        <div class="testimonial">
-                            <blockquote data-i18n-key="testimonials.item1.quote">"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!"</blockquote>
-                            <cite data-i18n-key="testimonials.item1.cite">— Асем Муратова, родитель</cite>
-                        </div>
-                        <div class="testimonial">
-                            <blockquote data-i18n-key="testimonials.item2.quote">"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников."</blockquote>
-                            <cite data-i18n-key="testimonials.item2.cite">— Арман Султанов, выпускник</cite>
-                        </div>
-                        <div class="testimonial">
-                            <blockquote data-i18n-key="testimonials.item3.quote">"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах."</blockquote>
-                            <cite data-i18n-key="testimonials.item3.cite">— Елена Петрова, родитель</cite>
-                        </div>
-                    </div>
-                    <div class="carousel-dots"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Инфраструктура -->
-        <section id="infrastructure">
-            <div class="container">
-                <h2 data-i18n-key="infrastructure.title">Современная инфраструктура</h2>
-                <div class="gallery-grid">
-                    <div class="gallery-item fade-in">
-                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1932&auto=format&fit=crop" alt="Современный класс">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                    <div class="gallery-item fade-in" style="transition-delay: 0.1s;">
-                        <img src="https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?q=80&w=2070&auto=format&fit=crop" alt="Научная лаборатория">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                    <div class="gallery-item fade-in" style="transition-delay: 0.2s;">
-                        <img src="https://images.unsplash.com/photo-1558008423-a26a73865528?q=80&w=2070&auto=format&fit=crop" alt="Спортивный зал">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                     <div class="gallery-item fade-in" style="transition-delay: 0.3s;">
-                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1854&auto=format&fit=crop" alt="Библиотека">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-         <!-- Педагогический состав -->
+        <!-- Teachers Section -->
         <section id="teachers" class="section-bg">
             <div class="container">
                 <h2 data-i18n-key="teachers.title">Наши педагоги</h2>
+                <p class="section-subtitle" data-i18n-key="teachers.subtitle">Опытные преподаватели с индивидуальным подходом к каждому ребёнку</p>
+                
                 <div class="teachers-grid">
-                    <div class="teacher-card fade-in">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1888&auto=format&fit=crop" alt="Teacher 1">
-                        <h4 data-i18n-key="teachers.t1.name">Айжан Ахметова</h4>
-                        <p data-i18n-key="teachers.t1.title">Кандидат педагогических наук, учитель математики</p>
-                    </div>
+                    <!-- Teacher 3: Прядко Стелла Валерьевна -->
                     <div class="teacher-card fade-in" style="transition-delay: 0.2s;">
-                        <img src="https://images.unsplash.com/photo-1580894732444-8ecded7948b4?q=80&w=2070&auto=format&fit=crop" alt="Teacher 2">
-                        <h4 data-i18n-key="teachers.t2.name">Майкл Джонсон</h4>
-                        <p data-i18n-key="teachers.t2.title">Носитель языка, сертификат CELTA, учитель английского</p>
+                        <!-- PLACE PHOTO HERE: pryadko_stella.jpg -->
+                        <img src="photos/3.jpeg" alt="Прядко Стелла Валерьевна" class="teacher-photo">
+                        <div class="teacher-info">
+                            <h4 data-i18n-key="teachers.t3.name">Прядко Стелла Валерьевна</h4>
+                            <p class="teacher-position" data-i18n-key="teachers.t3.position">Директор школы</p>
+                            <p class="teacher-experience" data-i18n-key="teachers.t3.experience"><i class="fas fa-briefcase"></i> Опыт работы в образовании</p>
+                            <p class="teacher-achievements" data-i18n-key="teachers.t3.achievements">Руководитель образовательного учреждения</p>
+                        </div>
                     </div>
-                    <div class="teacher-card fade-in" style="transition-delay: 0.4s;">
-                        <img src="https://images.unsplash.com/photo-1594744800539-8376453955ce?q=80&w=1887&auto=format&fit=crop" alt="Teacher 3">
-                        <h4 data-i18n-key="teachers.t3.name">Ернар Кайратов</h4>
-                        <p data-i18n-key="teachers.t3.title">Магистр наук, учитель физики и робототехники</p>
+                    
+                    <!-- Teacher 1: Сидоренко Светлана Игоревна -->
+                    <div class="teacher-card fade-in">
+                        <!-- PLACE PHOTO HERE: sidorenko_svetlana.jpg -->
+                        <img src="photos/1.jpeg" alt="Сидоренко Светлана Игоревна" class="teacher-photo">
+                        <div class="teacher-info">
+                            <h4 data-i18n-key="teachers.t1.name">Сидоренко Светлана Игоревна</h4>
+                            <p class="teacher-position" data-i18n-key="teachers.t1.position">Учитель начальных классов</p>
+                            <p class="teacher-experience" data-i18n-key="teachers.t1.experience"><i class="fas fa-briefcase"></i> Опыт работы: 15 лет</p>
+                            <p class="teacher-achievements" data-i18n-key="teachers.t1.achievements">Высшая категория. Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях</p>
+                        </div>
                     </div>
-                     <div class="teacher-card fade-in" style="transition-delay: 0.6s;">
-                        <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=1887&auto=format&fit=crop" alt="Teacher 4">
-                        <h4 data-i18n-key="teachers.t4.name">Ольга Васильева</h4>
-                        <p data-i18n-key="teachers.t4.title">Заслуженный деятель искусств, учитель музыки</p>
+
+                    <!-- Teacher 2: Михненко Марина Филипповна -->
+                    <div class="teacher-card fade-in" style="transition-delay: 0.1s;">
+                        <!-- PLACE PHOTO HERE: mikhnenko_marina.jpg -->
+                        <img src="photos/2.jpeg" alt="Михненко Марина Филипповна" class="teacher-photo">
+                        <div class="teacher-info">
+                            <h4 data-i18n-key="teachers.t2.name">Михненко Марина Филипповна</h4>
+                            <p class="teacher-position" data-i18n-key="teachers.t2.position">Учитель начальных классов, учитель английского языка</p>
+                            <p class="teacher-experience" data-i18n-key="teachers.t2.experience"><i class="fas fa-briefcase"></i> Опыт работы: 25 лет</p>
+                            <p class="teacher-achievements" data-i18n-key="teachers.t2.achievements">Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях</p>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Teacher 4: Залесская Дарья Олеговна -->
+                    <div class="teacher-card fade-in" style="transition-delay: 0.3s;">
+                        <!-- PLACE PHOTO HERE: zalesskaya_darya.jpg -->
+                        <img src="photos/4.jpeg" alt="Залесская Дарья Олеговна" class="teacher-photo">
+                        <div class="teacher-info">
+                            <h4 data-i18n-key="teachers.t4.name">Залесская Дарья Олеговна</h4>
+                            <p class="teacher-position" data-i18n-key="teachers.t4.position">Учитель начальных классов</p>
+                            <p class="teacher-experience" data-i18n-key="teachers.t4.experience"><i class="fas fa-briefcase"></i> Опыт работы: 12 лет</p>
+                            <p class="teacher-achievements" data-i18n-key="teachers.t4.achievements">Модератор. Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Новости -->
+        <!-- News Section -->
         <section id="news">
             <div class="container">
                 <h2 data-i18n-key="news.title">Последние новости</h2>
                 <div class="news-grid" id="news-grid-container">
-                    <!-- Новости будут загружены сюда с помощью JS -->
+                    <!-- News carousel will be loaded here via JavaScript -->
                 </div>
             </div>
         </section>
 
-        <!-- Контакты и поступление -->
+        <!-- Contact Section -->
         <section id="contact">
             <div class="container">
                 <h2 data-i18n-key="contact.title">Контакты и поступление</h2>
                 <div class="contact-wrapper fade-in">
                     <div class="contact-info">
                         <h3 data-i18n-key="contact.info.title">Свяжитесь с нами</h3>
-                        <p data-i18n-key="contact.info.p1">Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.</p>
+                        <p data-i18n-key="contact.info.text">Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.</p>
                         <ul>
-                            <li data-i18n-key="contact.info.address"><i class="fas fa-map-marker-alt"></i> г. Астана, ул. Просвещения, 1</li>
-                            <li><i class="fas fa-phone"></i> +7 (7172) 123-45-67</li>
-                            <li><i class="fas fa-envelope"></i> admissions@centralschool.kz</li>
+                            <li><i class="fas fa-map-marker-alt"></i> <span data-i18n-key="contact.info.address">г. Астана, район Сарыарка, ул. Шыганак, 7</span></li>
+                            <li><i class="fas fa-phone"></i> <a href="tel:+77015731794">+7 701 573 17 94</a></li>
+                            <li><i class="fas fa-envelope"></i> <a href="mailto:school@akademia.kz">school@akademia.kz</a></li>
+                            <li><i class="fas fa-clock"></i> <span data-i18n-key="contact.info.hours">Пн-Пт: 08:00 - 17:00</span></li>
                         </ul>
+
+                        <div class="license-info">
+                            <p data-i18n-key="contact.license"><i class="fas fa-certificate"></i> Лицензия № KZ88LAA00031985 от 07.09.2021г</p>
+                        </div>
+                        
                         <div class="map-container">
-                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2505.954366918958!2d71.4162963156689!3d51.09085887956895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x424584285e669e45%3A0x4c2d82928f6453b6!2z0JzQtdC20LTRg9C90LDRgNC-0LTQvdGLINCy0YvQutC-0LzQvtGA0L7QtNC90YvQuQ!5e0!3m2!1sru!2skz!4v1678886400000!5m2!1sru!2skz" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2504.285850425889!2d71.4052051!3d51.1584074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x424586dcd58d530d%3A0xd3dd57f0c1394ad0!2z0YPQuy4g0KjRi9Cz0LDQvdCw0Log0JTQtdC7z47QvdGL0LksINCQ0YHRgtCw0L3QsCwg0JrQsNC30LDRhdGB0YLQsNC9!5e0!3m2!1sru!2skz!4v1234567890" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                     </div>
+                    
                     <div class="contact-form">
                         <h3 data-i18n-key="contact.form.title">Задать вопрос</h3>
                         <form id="main-contact-form" novalidate>
                             <div class="form-group">
                                 <input type="text" id="name" name="name" placeholder="Ваше имя" required data-i18n-key="contact.form.name" data-i18n-key-placeholder>
-                                <div class="error-message" data-i18n-key="contact.form.errorName">Пожалуйста, введите ваше имя.</div>
                             </div>
                             <div class="form-group">
                                 <input type="email" id="email" name="email" placeholder="Ваш Email" required data-i18n-key="contact.form.email" data-i18n-key-placeholder>
-                                <div class="error-message" data-i18n-key="contact.form.errorEmail">Пожалуйста, введите корректный email.</div>
                             </div>
                             <div class="form-group">
                                 <input type="tel" id="phone" name="phone" placeholder="Номер телефона" required data-i18n-key="contact.form.phone" data-i18n-key-placeholder>
-                                <div class="error-message" data-i18n-key="contact.form.errorPhone">Пожалуйста, введите номер телефона.</div>
                             </div>
                             <div class="form-group">
                                 <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение" required data-i18n-key="contact.form.message" data-i18n-key-placeholder></textarea>
-                                <div class="error-message" data-i18n-key="contact.form.errorMessage">Пожалуйста, введите ваше сообщение.</div>
                             </div>
                             <button type="submit" class="btn btn-primary" data-i18n-key="contact.form.submit">Отправить</button>
                         </form>
@@ -879,602 +332,53 @@
         </section>
     </main>
 
-    <!-- Футер (Footer) -->
+    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h4 data-i18n-key="footer.col1.title">Central School</h4>
-                    <p data-i18n-key="footer.col1.text">Ведущее образовательное учреждение, формирующее будущее поколение лидеров.</p>
+                    <h4>Начальная школа Академия</h4>
+                    <p data-i18n-key="footer.description">Благоприятная и стимулирующая учебная среда для достижения успехов каждого ребёнка.</p>
+                    <p class="footer-founded" data-i18n-key="footer.founded">Основана в 2021 году</p>
                 </div>
                 <div class="footer-col">
-                    <h4 data-i18n-key="footer.col2.title">Быстрые ссылки</h4>
+                    <h4 data-i18n-key="footer.links.title">Быстрые ссылки</h4>
                     <ul>
                         <li><a href="#about" data-i18n-key="nav.about">О школе</a></li>
                         <li><a href="#programs" data-i18n-key="nav.programs">Программы</a></li>
                         <li><a href="#achievements" data-i18n-key="nav.achievements">Достижения</a></li>
+                        <li><a href="#teachers" data-i18n-key="nav.teachers">Педагоги</a></li>
                         <li><a href="#news" data-i18n-key="nav.news">Новости</a></li>
                         <li><a href="#contact" data-i18n-key="nav.contact">Контакты</a></li>
+                        <li><a href="/documents.html"><strong>Документы школы</strong></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4 data-i18n-key="nav.contact">Контакты</h4>
                     <ul>
-                        <li data-i18n-key="contact.info.address">г. Астана, ул. Просвещения, 1</li>
-                        <li>+7 (7172) 123-45-67</li>
-                        <li>info@centralschool.kz</li>
+                        <li data-i18n-key="contact.info.address">г. Астана, район Сарыарка, ул. Шыганак, 7</li>
+                        <li>+7 701 573 17 94</li>
+                        <li>school@akademia.kz</li>
+                        <li data-i18n-key="contact.info.hours">Пн-Пт: 08:00 - 17:00</li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4 data-i18n-key="footer.col4.title">Мы в соцсетях</h4>
+                    <h4 data-i18n-key="footer.social.title">Мы в соцсетях</h4>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="https://instagram.com/akademiakz.school" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-i18n-key="footer.copy">&copy; 2024 Central School. Все права защищены.</p>
+                <p data-i18n-key="footer.copy">&copy; 2024 ТОО «Начальная школа Академия». Все права защищены.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Модальные окна -->
-    <div id="modal-primary" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3 data-i18n-key="modal.p1.title">Программа начальной школы</h3>
-            <p data-i18n-key="modal.p1.text">Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.</p>
-            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Начальная школа">
-        </div>
-    </div>
-    <div id="modal-secondary" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3 data-i18n-key="modal.p2.title">Программа средней и старшей школы</h3>
-            <p data-i18n-key="modal.p2.text">В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.</p>
-            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Средняя школа">
-        </div>
-    </div>
-    <div id="modal-exams" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3 data-i18n-key="modal.p3.title">Подготовка к ЕНТ и международным экзаменам</h3>
-            <p data-i18n-key="modal.p3.text">Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов.</p>
-             <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop" style="width:100%; border-radius: var(--radius-md); margin-top: 1rem;" alt="Подготовка к экзаменам">
-        </div>
-    </div>
-
-    <div id="gallery-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; padding:1rem;">
-             <span class="close-modal">&times;</span>
-             <img id="gallery-modal-image" src="" alt="Gallery image" style="width:100%; border-radius: var(--radius-md);">
-        </div>
-    </div>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        const translations = {
-            ru: {
-                "title": "Central School - Образовательное Учреждение",
-                "lang.ru": "Русский",
-                "lang.kz": "Қазақша",
-                "nav.about": "О школе",
-                "nav.programs": "Программы",
-                "nav.achievements": "Достижения",
-                "nav.news": "Новости",
-                "nav.contact": "Контакты",
-                "nav.apply": "Поступить",
-                "news.title": "Последние новости",
-                "news.noNews": "Новостей пока нет.",
-                "news.error": "Не удалось загрузить новости.",
-                "news.published": "Опубликовано:",
-                "hero.title": "Открываем двери в успешное будущее",
-                "hero.subtitle": "Инновационное образование, основанное на лучших мировых практиках и национальных традициях.",
-                "hero.btnPrograms": "Наши программы",
-                "hero.btnAbout": "Узнать больше",
-                "about.title": "Наша миссия — воспитать лидеров нового поколения",
-                "about.p1": "Central School – это не просто учебное заведение, а сообщество единомышленников, стремящихся к знаниям и саморазвитию. Мы гордимся нашей историей, которая началась более 20 лет назад, и традициями, которые мы бережно храним.",
-                "about.p2": "Наши ценности – это академическая честность, уважение к личности, стремление к совершенству и социальная ответственность. Мы создаем среду, в которой каждый ученик может раскрыть свой потенциал.",
-                "about.stat1": "Лет на рынке образования",
-                "about.stat2": "Счастливых учеников",
-                "about.stat3": "Выпускников",
-                "about.stat4": "% поступления в вузы",
-                "programs.title": "Образовательные программы",
-                "programs.card1.title": "Начальная школа",
-                "programs.card1.text": "Комплексный подход к развитию ребенка, закладывающий прочный фундамент для дальнейшего обучения.",
-                "common.details": "Подробнее",
-                "programs.card2.title": "Средняя и старшая школа",
-                "programs.card2.text": "Углубленное изучение предметов и профильная подготовка к будущей профессии.",
-                "programs.card3.title": "Подготовка к ЕНТ и IELTS",
-                "programs.card3.text": "Эффективные методики, которые гарантируют высокие баллы и поступление в лучшие вузы.",
-                "achievements.title": "Достижения и признание",
-                "achievements.item1.title": "Топ-5 школ страны",
-                "achievements.item1.text": "Входим в пятерку лучших по результатам национальных рейтингов.",
-                "achievements.item2.title": "95% поступлений",
-                "achievements.item2.text": "Наши выпускники поступают в ведущие университеты мира.",
-                "achievements.item3.title": "Победители олимпиад",
-                "achievements.item3.text": "Ежегодно наши ученики занимают призовые места на олимпиадах.",
-                "achievements.item4.title": "Международная аккредитация",
-                "achievements.item4.text": "Наши программы соответствуют высоким мировым стандартам.",
-                "testimonials.title": "Что говорят о нас",
-                "testimonials.item1.quote": "\"Лучшее решение для образования нашего ребенка. Сильные преподаватели и прекрасная атмосфера. Спасибо, Central School!\"",
-                "testimonials.item1.cite": "— Асем Муратова, родитель",
-                "testimonials.item2.quote": "\"Я благодарен школе за знания, которые помогли мне поступить в университет мечты. Здесь я нашел настоящих друзей и наставников.\"",
-                "testimonials.item2.cite": "— Арман Султанов, выпускник",
-                "testimonials.item3.quote": "\"Индивидуальный подход к каждому ученику действительно работает. Мой сын стал более уверенным в себе и своих силах.\"",
-                "testimonials.item3.cite": "— Елена Петрова, родитель",
-                "infrastructure.title": "Современная инфраструктура",
-                "teachers.title": "Наши педагоги",
-                "teachers.t1.name": "Айжан Ахметова",
-                "teachers.t1.title": "Кандидат педагогических наук, учитель математики",
-                "teachers.t2.name": "Майкл Джонсон",
-                "teachers.t2.title": "Носитель языка, сертификат CELTA, учитель английского",
-                "teachers.t3.name": "Ернар Кайратов",
-                "teachers.t3.title": "Магистр наук, учитель физики и робототехники",
-                "teachers.t4.name": "Ольга Васильева",
-                "teachers.t4.title": "Заслуженный деятель искусств, учитель музыки",
-                "contact.title": "Контакты и поступление",
-                "contact.info.title": "Свяжитесь с нами",
-                "contact.info.p1": "Наша приемная комиссия готова ответить на все ваши вопросы и помочь с процессом поступления.",
-                "contact.info.address": "г. Астана, ул. Просвещения, 1",
-                "contact.form.title": "Задать вопрос",
-                "contact.form.name": "Ваше имя",
-                "contact.form.email": "Ваш Email",
-                "contact.form.phone": "Номер телефона",
-                "contact.form.message": "Ваше сообщение",
-                "contact.form.submit": "Отправить",
-                "contact.form.errorName": "Пожалуйста, введите ваше имя.",
-                "contact.form.errorEmail": "Пожалуйста, введите корректный email.",
-                "contact.form.errorPhone": "Пожалуйста, введите номер телефона.",
-                "contact.form.errorMessage": "Пожалуйста, введите ваше сообщение.",
-                "contact.form.sending": "Отправка...",
-                "contact.form.success": "Сообщение успешно получено и сохранено!",
-                "contact.form.error": "Не удалось отправить сообщение. Попробуйте позже.",
-                "footer.col1.title": "Central School",
-                "footer.col1.text": "Ведущее образовательное учреждение, формирующее будущее поколение лидеров.",
-                "footer.col2.title": "Быстрые ссылки",
-                "footer.col4.title": "Мы в соцсетях",
-                "footer.copy": "© 2024 Central School. Все права защищены.",
-                "modal.p1.title": "Программа начальной школы",
-                "modal.p1.text": "Наша программа для 1-4 классов сфокусирована на всестороннем развитии личности. Мы используем игровые методики, проектную деятельность и индивидуальный подход. Основные предметы включают математику, грамоту, познание мира, английский язык и творческие дисциплины.",
-                "modal.p2.title": "Программа средней и старшей школы",
-                "modal.p2.text": "В 5-11 классах мы предлагаем углубленное изучение предметов с возможностью выбора профильных направлений: физико-математическое, химико-биологическое и гуманитарное. Ученики активно участвуют в олимпиадах и научных проектах.",
-                "modal.p3.title": "Подготовка к ЕНТ и международным экзаменам",
-                "modal.p3.text": "Наши курсы подготовки к ЕНТ, IELTS, TOEFL и SAT разработаны опытными методистами. Мы гарантируем системный подход, регулярные пробные тесты и работу над ошибками, что позволяет нашим ученикам достигать максимальных результатов."
-            },
-            kz: {
-                "title": "Central School - Білім беру мекемесі",
-                "lang.ru": "Орысша",
-                "lang.kz": "Қазақша",
-                "nav.about": "Мектеп туралы",
-                "nav.programs": "Бағдарламалар",
-                "nav.achievements": "Жетістіктер",
-                "nav.news": "Жаңалықтар",
-                "nav.contact": "Байланыс",
-                "nav.apply": "Түсу",
-                "news.title": "Соңғы жаңалықтар",
-                "news.noNews": "Жаңалықтар әзірге жоқ.",
-                "news.error": "Жаңалықтарды жүктеу мүмкін болмады.",
-                "news.published": "Жарияланды:",
-                "hero.title": "Табысты болашаққа есік ашамыз",
-                "hero.subtitle": "Ең үздік әлемдік тәжірибе мен ұлттық дәстүрлерге негізделген инновациялық білім.",
-                "hero.btnPrograms": "Біздің бағдарламалар",
-                "hero.btnAbout": "Толық ақпарат",
-                "about.title": "Біздің миссиямыз — жаңа ұрпақ көшбасшыларын тәрбиелеу",
-                "about.p1": "Central School – бұл жай ғана оқу орны емес, білімге және өзін-өзі дамытуға ұмтылатын бірдей ойлы адамдардың қауымдастығы. Біз 20 жылдан астам бұрын басталған тарихымызбен және сақтап келе жатқан дәстүрлерімізбен мақтанамыз.",
-                "about.p2": "Біздің құндылықтарымыз – академиялық адалдық, жеке тұлғаны құрметтеу, кемелдікке ұмтылу және әлеуметтік жауапкершілік. Біз әр оқушының өз әлеуетін ашуына мүмкіндік беретін орта құрамыз.",
-                "about.stat1": "Білім нарығындағы жылдар",
-                "about.stat2": "Бақытты оқушылар",
-                "about.stat3": "Түлектер",
-                "about.stat4": "% жоғары оқу орындарына түсу",
-                "programs.title": "Білім беру бағдарламалары",
-                "programs.card1.title": "Бастауыш мектеп",
-                "programs.card1.text": "Баланың дамуына кешенді көзқарас, алдағы оқуға берік іргетас қалайды.",
-                "common.details": "Толығырақ",
-                "programs.card2.title": "Орта және жоғары сынып",
-                "programs.card2.text": "Пәндерді терең оқып үйрену және болашақ мамандыққа бағдарлы дайындық.",
-                "programs.card3.title": "ҰБТ және IELTS-ке дайындық",
-                "programs.card3.text": "Жоғары балл және үздік жоғары оқу орындарына түсуді кепілдік ететін тиімді әдістемелер.",
-                "achievements.title": "Жетістіктер мен тану",
-                "achievements.item1.title": "Елдің ТОП-5 мектебі",
-                "achievements.item1.text": "Ұлттық рейтинг нәтижелері бойынша бес үздіктің қатарындамыз.",
-                "achievements.item2.title": "95% түсу көрсеткіші",
-                "achievements.item2.text": "Біздің түлектер әлемнің жетекші университеттеріне түседі.",
-                "achievements.item3.title": "Олимпиада жеңімпаздары",
-                "achievements.item3.text": "Жыл сайын біздің оқушыларымыз олимпиадаларда жүлделі орындарды иеленеді.",
-                "achievements.item4.title": "Халықаралық аккредитация",
-                "achievements.item4.text": "Біздің бағдарламалар жоғары әлемдік стандарттарға сәйкес келеді.",
-                "testimonials.title": "Біз туралы не дейді",
-                "testimonials.item1.quote": "\"Біздің баламыздың білімі үшін ең үздік шешім. Күшті мұғалімдер және керемет атмосфера. Рахмет, Central School!\"",
-                "testimonials.item1.cite": "— Асем Мұратова, ата-ана",
-                "testimonials.item2.quote": "\"Мен мектепке арман университетіме түсуге көмектескен білімдері үшін ризамын. Мұнда мен шынайы достар мен дәстүрші тапқан едім.\"",
-                "testimonials.item2.cite": "— Арман Сұлтанов, түлек",
-                "testimonials.item3.quote": "\"Әр оқушыға жеке көзқарас шынымен жұмыс істейді. Менің ұлым өзіне және өз күштеріне сенімді болды.\"",
-                "testimonials.item3.cite": "— Елена Петрова, ата-ана",
-                "infrastructure.title": "Заманауи инфрақұрылым",
-                "teachers.title": "Біздің педагогтар",
-                "teachers.t1.name": "Айжан Ахметова",
-                "teachers.t1.title": "Педагогика ғылымдарының кандидаты, математика мұғалімі",
-                "teachers.t2.name": "Майкл Джонсон",
-                "teachers.t2.title": "Тіл иесі, CELTA сертификаты, ағылшын тілі мұғалімі",
-                "teachers.t3.name": "Ернар Қайратов",
-                "teachers.t3.title": "Ғылым магистрі, физика және робототехника мұғалімі",
-                "teachers.t4.name": "Ольга Васильева",
-                "teachers.t4.title": "Еңбегі сіңген өнер қайраткері, музыка мұғалімі",
-                "contact.title": "Байланыстар және түсу",
-                "contact.info.title": "Бізбен байланысыңыз",
-                "contact.info.p1": "Біздің қабылдау комиссиясы барлық сұрақтарыңызға жауап беруге және түсу процесіне көмектесуге дайын.",
-                "contact.info.address": "Астана қаласы, Ағарту көшесі, 1",
-                "contact.form.title": "Сұрақ қою",
-                "contact.form.name": "Сіздің атыңыз",
-                "contact.form.email": "Сіздің Email",
-                "contact.form.phone": "Телефон нөмірі",
-                "contact.form.message": "Сіздің хабарламаңыз",
-                "contact.form.submit": "Жіберу",
-                "contact.form.errorName": "Өтінемін, атыңызды енгізіңіз.",
-                "contact.form.errorEmail": "Өтінемін, дұрыс email енгізіңіз.",
-                "contact.form.errorPhone": "Өтінемін, телефон нөмірін енгізіңіз.",
-                "contact.form.errorMessage": "Өтінемін, хабарламаңызды енгізіңіз.",
-                "contact.form.sending": "Жіберілуде...",
-                "contact.form.success": "Хабарлама сәтті алынды және сақталды!",
-                "contact.form.error": "Хабарламаны жіберу мүмкін болмады. Кейінірек көріңіз.",
-                "footer.col1.title": "Central School",
-                "footer.col1.text": "Болашақ көшбасшылар ұрпағын қалыптастыратын жетекші білім беру мекемеси.",
-                "footer.col2.title": "Жылдам сілтемелер",
-                "footer.col4.title": "Біз әлеуметтік желілерде",
-                "footer.copy": "© 2024 Central School. Барлық құқықтар қорғалған.",
-                "modal.p1.title": "Бастауыш мектеп бағдарламасы",
-                "modal.p1.text": "Біздің 1-4 сыныптарға арналған бағдарламамыз жеке тұлғаның жан-жақты дамуына бағытталған. Біз ойын әдістемелерін, жобалық қызметті және жеке көзқарасты қолданамыз. Негізгі пәндерге математика, сауаттылық, әлемді тану, ағылшын тілі және шығармашылық пәндер кіреді.",
-                "modal.p2.title": "Орта және жоғары сынып бағдарламасы",
-                "modal.p2.text": "5-11 сыныптарда біз пәндерді терең оқып үйренуді және бағдарлы бағыттарды таңдау мүмкіндігін ұсынамыз: физика-математикалық, химия-биологиялық және гуманитарлық. Оқушылар олимпиадалар мен ғылыми жобаларға белсенді қатысады.",
-                "modal.p3.title": "ҰБТ және халықаралық емтихандарға дайындық",
-                "modal.p3.text": "Біздің ҰБТ, IELTS, TOEFL және SAT-қа дайындық курстары тәжірибелі әдіскерлер әзірлеген. Біз жүйелі көзқарасты, тұрақты сынақ тесттері мен қателерді талдауды кепілдендіреміз, бұл біздің оқушыларымызға максималды нәтижеге жетуге мүмкіндік береді."
-            }
-        };
-
-        // --- News Loader ---
-        const loadNews = async () => {
-            const newsContainer = document.getElementById('news-grid-container');
-            try {
-                const response = await fetch('/api/news');
-                if (!response.ok) throw new Error('Network response was not ok.');
-                const articles = await response.json();
-
-                if (!articles || articles.length === 0) {
-                    newsContainer.innerHTML = `<p data-i18n-key="news.noNews">Новостей пока нет.</p>`;
-                    return;
-                }
-
-                newsContainer.innerHTML = ''; // Clear container
-                articles.forEach(article => {
-                    const articleEl = document.createElement('div');
-                    articleEl.className = 'news-card';
-                    const postDate = new Date(article.created_at).toLocaleDateString('ru-RU');
-
-                    let imageHTML = '';
-                    if (article.image_url) {
-                        imageHTML = `<img src="${article.image_url}" alt="${article.title}" class="news-card-image">`;
-                    }
-
-                    articleEl.innerHTML = `
-                        ${imageHTML}
-                        <div class="news-card-content">
-                            <h3>${article.title}</h3>
-                            <p>${article.content}</p>
-                        </div>
-                        <div class="news-card-footer">
-                            <span data-i18n-key="news.published">Опубликовано:</span> ${postDate}
-                        </div>
-                    `;
-                    newsContainer.appendChild(articleEl);
-                });
-            } catch (error) {
-                newsContainer.innerHTML = `<p data-i18n-key="news.error">Не удалось загрузить новости.</p>`;
-                console.error('Error fetching news:', error);
-            }
-        };
-        loadNews();
-
-
-        const languageSwitcher = document.querySelector('.language-switcher');
-        const langButton = document.querySelector('.lang-button');
-        const currentLangSpan = document.querySelector('.current-lang');
-        const langOptions = document.querySelectorAll('.lang-option');
-
-        const setLanguage = (lang) => {
-            document.documentElement.lang = lang;
-            document.querySelectorAll('[data-i18n-key]').forEach(element => {
-                const key = element.getAttribute('data-i18n-key');
-                if (translations[lang] && translations[lang][key]) {
-                    if (element.hasAttribute('data-i18n-key-placeholder')) {
-                        element.placeholder = translations[lang][key];
-                    } else {
-                        element.innerHTML = translations[lang][key];
-                    }
-                }
-            });
-            // Update button text
-            currentLangSpan.textContent = lang.toUpperCase();
-            localStorage.setItem('language', lang);
-            languageSwitcher.classList.remove('active');
-        };
-
-        langButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            languageSwitcher.classList.toggle('active');
-        });
-
-        document.addEventListener('click', () => {
-            if (languageSwitcher.classList.contains('active')) {
-                languageSwitcher.classList.remove('active');
-            }
-        });
-
-        langOptions.forEach(option => {
-            option.addEventListener('click', (e) => {
-                e.preventDefault();
-                const selectedLang = option.getAttribute('data-lang');
-                setLanguage(selectedLang);
-            });
-        });
-
-        // Load saved language or default to 'ru'
-        const savedLang = localStorage.getItem('language') || 'ru';
-        setLanguage(savedLang);
-
-        // --- Header Scroll Effect ---
-        const header = document.getElementById('main-header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        // --- Mobile Menu ---
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
-        const navMenu = document.querySelector('.nav-menu');
-        menuToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            const icon = menuToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-        });
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                    menuToggle.querySelector('i').classList.add('fa-bars');
-                    menuToggle.querySelector('i').classList.remove('fa-times');
-                }
-            });
-        });
-
-        // --- Active Nav Link Highlighting on Scroll ---
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
-                    current = section.getAttribute('id');
-                }
-            });
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').includes(current)) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        // --- Scroll Animations ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // --- Animated Counters ---
-        const counters = document.querySelectorAll('.stat-number');
-        const speed = 200; // The lower the slower
-        const counterObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counter = entry.target;
-                    const updateCount = () => {
-                        const target = +counter.getAttribute('data-target');
-                        const count = +counter.innerText;
-                        const inc = target / speed;
-                        if (count < target) {
-                            counter.innerText = Math.ceil(count + inc);
-                            setTimeout(updateCount, 10);
-                        } else {
-                            counter.innerText = target;
-                        }
-                    };
-                    updateCount();
-                    observer.unobserve(counter); // Stop observing once animated
-                }
-            });
-        }, { threshold: 0.5 });
-        counters.forEach(counter => counterObserver.observe(counter));
-
-        // --- Testimonial Carousel ---
-        const slider = document.querySelector('.testimonial-slider');
-        const testimonials = document.querySelectorAll('.testimonial');
-        const dotsContainer = document.querySelector('.carousel-dots');
-        let currentIndex = 0;
-
-        if (slider && testimonials.length > 0) {
-            testimonials.forEach((_, i) => {
-                const dot = document.createElement('div');
-                dot.classList.add('dot');
-                if (i === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => {
-                    goToSlide(i);
-                });
-                dotsContainer.appendChild(dot);
-            });
-
-            const dots = document.querySelectorAll('.dot');
-
-            function goToSlide(index) {
-                slider.style.transform = `translateX(-${index * 100}%)`;
-                dots.forEach(d => d.classList.remove('active'));
-                dots[index].classList.add('active');
-                currentIndex = index;
-            }
-
-            setInterval(() => {
-                let nextIndex = (currentIndex + 1) % testimonials.length;
-                goToSlide(nextIndex);
-            }, 5000); // Auto-scroll every 5 seconds
-        }
-
-        // --- Modal Logic ---
-        const modals = document.querySelectorAll('.modal');
-        const openModalButtons = document.querySelectorAll('.open-modal');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-
-        openModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const modalId = button.getAttribute('data-modal-id');
-                const modal = document.getElementById(modalId);
-                if (modal) modal.style.display = 'block';
-            });
-        });
-
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                button.closest('.modal').style.display = 'none';
-            });
-        });
-
-        window.addEventListener('click', (event) => {
-            modals.forEach(modal => {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-
-        // --- Gallery Modal ---
-        const galleryItems = document.querySelectorAll('.gallery-item');
-        const galleryModal = document.getElementById('gallery-modal');
-        const galleryModalImage = document.getElementById('gallery-modal-image');
-
-        galleryItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const imgSrc = item.querySelector('img').src;
-                galleryModalImage.src = imgSrc;
-                galleryModal.style.display = 'block';
-            });
-        });
-
-        // --- Contact Form Submission ---
-        const form = document.getElementById('main-contact-form');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            let isValid = true;
-            const name = document.getElementById('name');
-            const email = document.getElementById('email');
-            const phone = document.getElementById('phone');
-            const message = document.getElementById('message');
-
-            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-            [name, email, phone, message].forEach(el => el.style.borderColor = '#ccc');
-
-            if (name.value.trim() === '') {
-                isValid = false;
-                showError(name, 'Пожалуйста, введите ваше имя.');
-            }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email.value)) {
-                isValid = false;
-                showError(email, 'Пожалуйста, введите корректный email.');
-            }
-            if (message.value.trim() === '') {
-                isValid = false;
-                showError(message, 'Пожалуйста, введите ваше сообщение.');
-            }
-
-            if (phone.value.trim() === '') {
-                isValid = false;
-                showError(phone, 'Пожалуйста, введите номер телефона.');
-            }
-
-            if (!isValid) return;
-
-            const formData = {
-                name: name.value,
-                email: email.value,
-                phone: phone.value,
-                message: message.value
-            };
-
-            const submitButton = form.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Отправка...';
-
-            try {
-                const response = await fetch('/api/contact', { // Changed to relative path
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    form.reset();
-                    const successMessage = document.createElement('div');
-                    successMessage.textContent = result.message || 'Спасибо! Ваше сообщение отправлено.';
-                    successMessage.style.color = 'green';
-                    successMessage.style.marginTop = '1rem';
-                    form.appendChild(successMessage);
-                    setTimeout(() => { if(successMessage.parentNode) successMessage.parentNode.removeChild(successMessage) }, 5000);
-                } else {
-                    throw new Error(result.message || 'Произошла ошибка при отправке.');
-                }
-
-            } catch (error) {
-                const formStatus = document.querySelector('.form-status');
-                const errorMessage = document.createElement('div');
-                errorMessage.textContent = error.message || 'Не удалось отправить сообщение. Попробуйте позже.';
-                errorMessage.style.color = '#ef4444';
-                errorMessage.style.marginTop = '1rem';
-                form.appendChild(errorMessage);
-                setTimeout(() => { if(errorMessage.parentNode) errorMessage.parentNode.removeChild(errorMessage)}, 5000);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Отправить';
-            }
-        });
-
-        function showError(input, message) {
-            const formGroup = input.parentElement;
-            const errorDiv = formGroup.querySelector('.error-message');
-            input.style.borderColor = '#ef4444';
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-    });
-    </script>
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 
 </body>
 </html>
