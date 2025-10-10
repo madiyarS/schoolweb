@@ -1384,3 +1384,55 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+/* Teachers Carousel */
+.teachers-carousel-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.teachers-carousel {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+}
+
+.teachers-slider {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.teachers-slide {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem;
+    width: 100%;
+    flex-shrink: 0;
+    padding: 1rem 0;
+}
+
+.teachers-carousel-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Адаптив для карусели */
+@media (max-width: 1200px) {
+    .teachers-slide {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .teachers-slide {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .teachers-slide {
+        grid-template-columns: 1fr;
+    }
+}

@@ -74,6 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
             "teachers.t4.position": "Учитель начальных классов",
             "teachers.t4.experience": "Опыт работы: 12 лет",
             "teachers.t4.achievements": "Модератор. Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях",
+            "teachers.t5.name": "Белокобыльская Светлана Николаевна",
+            "teachers.t5.position": "Учитель цифровой грамотности",
+            "teachers.t5.experience": "Опыт работы: 12 лет",
+            "teachers.t5.achievements": "Первая категория. Сертификаты по современным образовательным технологиям и медиаграмотности",
             "news.title": "Последние новости",
             "news.noNews": "Новостей пока нет.",
             "news.error": "Не удалось загрузить новости.",
@@ -176,6 +180,10 @@ document.addEventListener('DOMContentLoaded', function() {
             "teachers.t4.position": "Бастауыш сынып мұғалімі",
             "teachers.t4.experience": "Жұмыс тәжірибесі: 12 жыл",
             "teachers.t4.achievements": "Модератор. Олимпиадаларға дайындау сертификаттары, курстар мен қалалық конференцияларға қатысу",
+            "teachers.t5.name": "Белокобыльская Светлана Николаевна",
+            "teachers.t5.position": "Цифрлық сауаттылық мұғалімі",
+            "teachers.t5.experience": "Жұмыс тәжірибесі: 12 жыл",
+            "teachers.t5.achievements": "Бірінші санат. Заманауи білім беру технологиялары және медиасауаттылық бойынша сертификаттар",
             "news.title": "Соңғы жаңалықтар",
             "news.noNews": "Жаңалықтар әзірше жоқ.",
             "news.error": "Жаңалықтарды жүктеу мүмкін болмады.",
@@ -282,6 +290,10 @@ document.addEventListener('DOMContentLoaded', function() {
             "teachers.t4.position": "Primary School Teacher",
             "teachers.t4.experience": "Work experience: 12 years",
             "teachers.t4.achievements": "Moderator. Certificates for olympiad preparation, participation in courses and city conferences",
+            "teachers.t5.name": "Belokobylskaya Svetlana Nikolaevna",
+            "teachers.t5.position": "Digital Literacy Teacher",
+            "teachers.t5.experience": "Work experience: 12 years",
+            "teachers.t5.achievements": "First category. Certificates in modern educational technologies and media literacy",
             "contact.title": "Contacts and Admission",
             "contact.info.title": "Contact Us",
             "contact.info.text": "Our admissions office is ready to answer all your questions and help with the enrollment process.",
@@ -560,6 +572,236 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize news carousel
     newsCarousel.init();
+
+    // Teachers Carousel
+    const teachersCarousel = {
+        currentSlide: 0,
+        teachersPerSlide: 4,
+        autoplayInterval: null,
+        
+        teachers: [
+            {
+                photo: "photos/3.jpeg",
+                name: "Прядко Стелла Валерьевна",
+                position: "Директор школы",
+                experience: "Опыт работы в образовании",
+                achievements: "Руководитель образовательного учреждения",
+                nameKey: "teachers.t3.name",
+                positionKey: "teachers.t3.position",
+                experienceKey: "teachers.t3.experience",
+                achievementsKey: "teachers.t3.achievements"
+            },
+            {
+                photo: "photos/1.jpeg",
+                name: "Сидоренко Светлана Игоревна",
+                position: "Учитель начальных классов",
+                experience: "Опыт работы: 15 лет",
+                achievements: "Высшая категория. Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях",
+                nameKey: "teachers.t1.name",
+                positionKey: "teachers.t1.position",
+                experienceKey: "teachers.t1.experience",
+                achievementsKey: "teachers.t1.achievements"
+            },
+            {
+                photo: "photos/5.jpeg",
+                name: "Белокобыльская Светлана Николаевна",
+                position: "Учитель цифровой грамотности",
+                experience: "Опыт работы: 12 лет",
+                achievements: "Первая категория. Сертификаты по современным образовательным технологиям и медиаграмотности",
+                nameKey: "teachers.t5.name",
+                positionKey: "teachers.t5.position",
+                experienceKey: "teachers.t5.experience",
+                achievementsKey: "teachers.t5.achievements"
+            },
+            {
+                photo: "photos/2.jpeg",
+                name: "Михненко Марина Филипповна",
+                position: "Учитель начальных классов, учитель английского языка",
+                experience: "Опыт работы: 25 лет",
+                achievements: "Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях",
+                nameKey: "teachers.t2.name",
+                positionKey: "teachers.t2.position",
+                experienceKey: "teachers.t2.experience",
+                achievementsKey: "teachers.t2.achievements"
+            },
+            {
+                photo: "photos/4.jpeg",
+                name: "Залесская Дарья Олеговна",
+                position: "Учитель начальных классов",
+                experience: "Опыт работы: 12 лет",
+                achievements: "Модератор. Сертификаты за подготовку к олимпиадам, участие в курсах и городских конференциях",
+                nameKey: "teachers.t4.name",
+                positionKey: "teachers.t4.position",
+                experienceKey: "teachers.t4.experience",
+                achievementsKey: "teachers.t4.achievements"
+            }
+        ],
+        
+        init() {
+            this.updateResponsiveSettings();
+            this.createSlides();
+            this.bindEvents();
+            this.updateControls();
+            this.startAutoPlay();
+            
+            // Обновляем при ресайзе окна
+            window.addEventListener('resize', () => {
+                this.updateResponsiveSettings();
+                this.createSlides();
+                this.currentSlide = 0;
+                this.updateSlider();
+            });
+        },
+        
+        updateResponsiveSettings() {
+            const width = window.innerWidth;
+            if (width <= 768) {
+                this.teachersPerSlide = 1;
+            } else if (width <= 992) {
+                this.teachersPerSlide = 2;
+            } else if (width <= 1200) {
+                this.teachersPerSlide = 3;
+            } else {
+                this.teachersPerSlide = 4;
+            }
+        },
+        
+        createSlides() {
+            const slider = document.getElementById('teachers-slider');
+            const dotsContainer = document.getElementById('teachers-dots');
+            
+            if (!slider || !dotsContainer) return;
+            
+            // Группируем учителей по слайдам
+            const slides = [];
+            for (let i = 0; i < this.teachers.length; i += this.teachersPerSlide) {
+                slides.push(this.teachers.slice(i, i + this.teachersPerSlide));
+            }
+            
+            // Создаем слайды
+            slider.innerHTML = slides.map((slideTeachers, slideIndex) => {
+                const teachersHTML = slideTeachers.map(teacher => `
+                    <div class="teacher-card fade-in">
+                        <img src="${teacher.photo}" alt="${teacher.name}" class="teacher-photo">
+                        <div class="teacher-info">
+                            <h4 data-i18n-key="${teacher.nameKey}">${teacher.name}</h4>
+                            <p class="teacher-position" data-i18n-key="${teacher.positionKey}">${teacher.position}</p>
+                            <p class="teacher-experience" data-i18n-key="${teacher.experienceKey}">
+                                <i class="fas fa-briefcase"></i> ${teacher.experience}
+                            </p>
+                            <p class="teacher-achievements" data-i18n-key="${teacher.achievementsKey}">${teacher.achievements}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Заполняем пустые места
+                const emptyCards = this.teachersPerSlide - slideTeachers.length;
+                const emptyHTML = emptyCards > 0 
+                    ? Array(emptyCards).fill('<div class="teacher-card" style="visibility: hidden;"></div>').join('')
+                    : '';
+                
+                return `
+                    <div class="teachers-slide" data-slide="${slideIndex}">
+                        ${teachersHTML}
+                        ${emptyHTML}
+                    </div>
+                `;
+            }).join('');
+            
+            // Создаем dots
+            this.totalSlides = slides.length;
+            if (slides.length > 1) {
+                dotsContainer.innerHTML = slides.map((_, index) => 
+                    `<div class="carousel-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
+                ).join('');
+            } else {
+                dotsContainer.innerHTML = '';
+            }
+        },
+        
+        bindEvents() {
+            const prevBtn = document.getElementById('teachers-prev-btn');
+            const nextBtn = document.getElementById('teachers-next-btn');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => this.previousSlide());
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => this.nextSlide());
+            }
+            
+            // Dots события
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#teachers-dots') && e.target.classList.contains('carousel-dot')) {
+                    const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+                    this.goToSlide(slideIndex);
+                }
+            });
+        },
+        
+        nextSlide() {
+            if (this.totalSlides <= 1) return;
+            
+            if (this.currentSlide < this.totalSlides - 1) {
+                this.currentSlide++;
+            } else {
+                this.currentSlide = 0;
+            }
+            this.updateSlider();
+            this.resetAutoPlay();
+        },
+        
+        previousSlide() {
+            if (this.totalSlides <= 1) return;
+            
+            if (this.currentSlide > 0) {
+                this.currentSlide--;
+            } else {
+                this.currentSlide = this.totalSlides - 1;
+            }
+            this.updateSlider();
+            this.resetAutoPlay();
+        },
+        
+        goToSlide(slideIndex) {
+            this.currentSlide = slideIndex;
+            this.updateSlider();
+            this.resetAutoPlay();
+        },
+        
+        updateSlider() {
+            const slider = document.getElementById('teachers-slider');
+            if (slider) {
+                slider.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+                this.updateControls();
+            }
+        },
+        
+        updateControls() {
+            document.querySelectorAll('#teachers-dots .carousel-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === this.currentSlide);
+            });
+        },
+        
+        startAutoPlay() {
+            if (this.totalSlides > 1) {
+                this.autoplayInterval = setInterval(() => {
+                    this.nextSlide();
+                }, 6000);
+            }
+        },
+        
+        resetAutoPlay() {
+            if (this.autoplayInterval) {
+                clearInterval(this.autoplayInterval);
+                this.startAutoPlay();
+            }
+        }
+    };
+
+    // Initialize teachers carousel
+    teachersCarousel.init();
 
     // Language Switcher
     const languageSwitcher = document.querySelector('.language-switcher');
