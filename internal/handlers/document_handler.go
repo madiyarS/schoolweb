@@ -51,6 +51,7 @@ func (h *DocumentHandler) UploadDocument(w http.ResponseWriter, r *http.Request)
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	category := r.FormValue("category")
+	folderIDStr := r.FormValue("folder_id") // Добавлено
 
 	// Validate required fields
 	if title == "" {
@@ -58,8 +59,14 @@ func (h *DocumentHandler) UploadDocument(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Parse folder ID
+	var folderID int
+	if folderIDStr != "" {
+		folderID, _ = strconv.Atoi(folderIDStr)
+	}
+
 	// Upload document
-	doc, err := h.service.UploadDocument(title, description, category, file, fileHeader)
+	doc, err := h.service.UploadDocument(title, description, category, folderID, file, fileHeader)
 	if err != nil {
 		log.Printf("Error uploading document: %v", err)
 		http.Error(w, fmt.Sprintf("Failed to upload document: %v", err), http.StatusInternalServerError)

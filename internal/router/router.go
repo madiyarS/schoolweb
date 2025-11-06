@@ -26,15 +26,16 @@ func Setup(cfg *config.Config, db *database.Database) *mux.Router {
 	contactHandler := handlers.NewContactHandler(db)
 	newsHandler := handlers.NewNewsHandler(db, uploadService)
 	documentHandler := handlers.NewDocumentHandler(documentService)
+	folderHandler := handlers.NewFolderHandler(db) // Добавлено
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(sessionService.GetStore())
 
 	// --- Public Routes ---
-	setupPublicRoutes(r, authHandler, contactHandler, newsHandler, documentHandler, cfg)
+	setupPublicRoutes(r, authHandler, contactHandler, newsHandler, documentHandler, folderHandler, cfg)
 
 	// --- Protected Admin Routes ---
-	setupAdminRoutes(r, authHandler, contactHandler, newsHandler, documentHandler, authMiddleware, cfg)
+	setupAdminRoutes(r, authHandler, contactHandler, newsHandler, documentHandler, folderHandler, authMiddleware, cfg)
 
 	// Public static files (must be last)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.PublicDir)))
@@ -44,19 +45,21 @@ func Setup(cfg *config.Config, db *database.Database) *mux.Router {
 
 func setupPublicRoutes(r *mux.Router, authHandler *handlers.AuthHandler,
 	contactHandler *handlers.ContactHandler, newsHandler *handlers.NewsHandler,
-	documentHandler *handlers.DocumentHandler, cfg *config.Config) {
+	documentHandler *handlers.DocumentHandler, folderHandler *handlers.FolderHandler, cfg *config.Config) {
 
 	// API endpoints
 	r.HandleFunc("/api/contact", contactHandler.SubmitContact).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/news", newsHandler.GetAllNews).Methods("GET")
 	r.HandleFunc("/api/news/{id}", newsHandler.GetSingleNews).Methods("GET")
-	r.HandleFunc("/documents.html", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, cfg.PublicDir+"/documents.html")
-	})
-	// Public document endpoints (viewing and downloading only)
+
+	// Public document endpoints
 	r.HandleFunc("/api/documents", documentHandler.GetAllDocuments).Methods("GET")
 	r.HandleFunc("/api/documents/{id}", documentHandler.GetDocument).Methods("GET")
 	r.HandleFunc("/api/documents/{id}/download", documentHandler.DownloadDocument).Methods("GET")
+
+	// Public folder endpoints
+	r.HandleFunc("/api/folders", folderHandler.GetAllFolders).Methods("GET")
+	r.HandleFunc("/api/folders/{id}/documents", folderHandler.GetFolderDocuments).Methods("GET")
 
 	// Auth endpoints
 	r.HandleFunc("/login", authHandler.Login).Methods("POST")
@@ -69,11 +72,15 @@ func setupPublicRoutes(r *mux.Router, authHandler *handlers.AuthHandler,
 	r.HandleFunc("/news_article.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, cfg.PublicDir+"/news_article.html")
 	})
+
+	r.HandleFunc("/documents.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, cfg.PublicDir+"/documents.html")
+	})
 }
 
 func setupAdminRoutes(r *mux.Router, authHandler *handlers.AuthHandler,
 	contactHandler *handlers.ContactHandler, newsHandler *handlers.NewsHandler,
-	documentHandler *handlers.DocumentHandler,
+	documentHandler *handlers.DocumentHandler, folderHandler *handlers.FolderHandler,
 	authMiddleware *middleware.AuthMiddleware, cfg *config.Config) {
 
 	adminRouter := r.PathPrefix("/admin").Subrouter()
@@ -81,7 +88,7 @@ func setupAdminRoutes(r *mux.Router, authHandler *handlers.AuthHandler,
 
 	// API routes
 	adminRouter.HandleFunc("/api/applications", contactHandler.GetApplications).Methods("GET", "OPTIONS")
-	adminRouter.HandleFunc("/api/contacts", contactHandler.GetApplications).Methods("GET", "OPTIONS") // Alias for contacts
+	adminRouter.HandleFunc("/api/contacts", contactHandler.GetApplications).Methods("GET", "OPTIONS")
 
 	// News routes
 	adminRouter.HandleFunc("/api/news", newsHandler.CreateNews).Methods("POST", "OPTIONS")
@@ -94,6 +101,12 @@ func setupAdminRoutes(r *mux.Router, authHandler *handlers.AuthHandler,
 	adminRouter.HandleFunc("/api/documents", documentHandler.UploadDocument).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/api/documents/{id}", documentHandler.GetDocument).Methods("GET")
 	adminRouter.HandleFunc("/api/documents/{id}", documentHandler.DeleteDocument).Methods("DELETE", "OPTIONS")
+
+	// Folder routes (admin only)
+	adminRouter.HandleFunc("/api/folders", folderHandler.GetAllFolders).Methods("GET")
+	adminRouter.HandleFunc("/api/folders", folderHandler.CreateFolder).Methods("POST", "OPTIONS")
+	adminRouter.HandleFunc("/api/folders/{id}", folderHandler.DeleteFolder).Methods("DELETE", "OPTIONS")
+	adminRouter.HandleFunc("/api/folders/{id}/documents", folderHandler.GetFolderDocuments).Methods("GET")
 
 	// Logout
 	adminRouter.HandleFunc("/logout", authHandler.Logout).Methods("POST")

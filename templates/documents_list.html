@@ -70,6 +70,12 @@
         .btn-danger:hover {
             background: #c82333;
         }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
         .logout-btn { 
             background: #d9534f; 
             color: white; 
@@ -102,6 +108,81 @@
             color: #004085;
             border: 1px solid #b3d9ff;
         }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            position: relative;
+        }
+        .tab.active {
+            color: #1e3a8a;
+        }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #1e3a8a;
+        }
+        
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .folder-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .folder-icon {
+            font-size: 3rem;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+        .folder-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .folder-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .folder-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .folder-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
         .search-box {
             margin-bottom: 1.5rem;
             display: flex;
@@ -273,7 +354,10 @@
                 <button onclick="openUploadModal()" class="btn">
                     <i class="fas fa-upload"></i> Загрузить документ
                 </button>
-                <button onclick="loadDocuments()" class="btn">Обновить</button>
+                <button onclick="openFolderModal()" class="btn btn-secondary">
+                    <i class="fas fa-folder-plus"></i> Создать папку
+                </button>
+                <button onclick="loadData()" class="btn">Обновить</button>
                 <form action="/admin/logout" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">Выйти</button>
                 </form>
@@ -282,39 +366,52 @@
 
         <div id="status-message" class="status-message"></div>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Поиск документов...">
-            <select id="categoryFilter">
-                <option value="">Все категории</option>
-                <option value="Учебные материалы">Учебные материалы</option>
-                <option value="Документы">Документы</option>
-                <option value="Формы">Формы</option>
-                <option value="Правила">Правила</option>
-                <option value="Другое">Другое</option>
-            </select>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('folders')">
+                <i class="fas fa-folder"></i> Папки
+            </button>
+            <button class="tab" onclick="switchTab('documents')">
+                <i class="fas fa-file"></i> Все документы
+            </button>
         </div>
 
-        <div id="documents-container">
-            <div class="loading">Загрузка документов...</div>
-            <table style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Файл</th>
-                        <th>Название</th>
-                        <th>Описание</th>
-                        <th>Категория</th>
-                        <th>Размер</th>
-                        <th>Дата</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody id="documents-table-body">
-                </tbody>
-            </table>
+        <!-- Folders View -->
+        <div id="folders-view">
+            <div id="folders-container" class="folders-grid">
+                <div class="loading">Загрузка папок...</div>
+            </div>
+        </div>
+
+        <!-- Documents View -->
+        <div id="documents-view" style="display: none;">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Поиск документов...">
+                <select id="folderFilter">
+                    <option value="">Все папки</option>
+                </select>
+            </div>
+            
+            <div id="documents-container">
+                <div class="loading">Загрузка документов...</div>
+                <table style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Файл</th>
+                            <th>Название</th>
+                            <th>Папка</th>
+                            <th>Размер</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documents-table-body">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Upload Modal -->
+    <!-- Upload Document Modal -->
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -333,14 +430,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="category">Категория *</label>
-                    <select id="category" name="category" required>
-                        <option value="">Выберите категорию</option>
-                        <option value="Учебные материалы">Учебные материалы</option>
-                        <option value="Документы">Документы</option>
-                        <option value="Формы">Формы</option>
-                        <option value="Правила">Правила</option>
-                        <option value="Другое">Другое</option>
+                    <label for="folder">Папка *</label>
+                    <select id="folder" name="folder_id" required>
+                        <option value="">Выберите папку</option>
                     </select>
                 </div>
 
@@ -366,8 +458,48 @@
         </div>
     </div>
 
+    <!-- Create Folder Modal -->
+    <div id="folderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Создать папку</h2>
+                <button class="close-modal" onclick="closeFolderModal()">&times;</button>
+            </div>
+            <form id="folderForm">
+                <div class="form-group">
+                    <label for="folderName">Название папки *</label>
+                    <input type="text" id="folderName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="folderDescription">Описание</label>
+                    <textarea id="folderDescription"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="folderIcon">Иконка</label>
+                    <select id="folderIcon">
+                        <option value="folder">📁 Папка</option>
+                        <option value="book">📚 Книга</option>
+                        <option value="file-text">📄 Документ</option>
+                        <option value="file-invoice">📋 Форма</option>
+                        <option value="gavel">⚖️ Правила</option>
+                        <option value="calendar">📅 Расписание</option>
+                        <option value="graduation-cap">🎓 Учебные материалы</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">
+                    <i class="fas fa-folder-plus"></i> Создать папку
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
         let allDocuments = [];
+        let allFolders = [];
+        let currentView = 'folders';
 
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('status-message');
@@ -411,58 +543,103 @@
             return 'fa-file';
         }
 
+        function getFolderIcon(icon) {
+            const icons = {
+                'folder': 'fa-folder',
+                'book': 'fa-book',
+                'file-text': 'fa-file-alt',
+                'file-invoice': 'fa-file-invoice',
+                'gavel': 'fa-gavel',
+                'calendar': 'fa-calendar-alt',
+                'graduation-cap': 'fa-graduation-cap'
+            };
+            return icons[icon] || 'fa-folder';
+        }
+
+        async function loadFolders() {
+            try {
+                const response = await fetch('/admin/api/folders', {
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) throw new Error('Failed to load folders');
+                
+                allFolders = await response.json() || [];
+                renderFolders();
+                updateFolderSelects();
+            } catch (error) {
+                console.error('Error loading folders:', error);
+                showStatus('Ошибка загрузки папок', 'error');
+            }
+        }
+
+        function renderFolders() {
+            const container = document.getElementById('folders-container');
+            
+            if (!allFolders || allFolders.length === 0) {
+                container.innerHTML = '<div class="no-data">Папок пока нет. Создайте первую папку!</div>';
+                return;
+            }
+
+            container.innerHTML = allFolders.map(folder => `
+                <div class="folder-card" onclick="viewFolderDocuments(${folder.id})">
+                    <div class="folder-icon">
+                        <i class="fas ${getFolderIcon(folder.icon)}"></i>
+                    </div>
+                    <div class="folder-name">${folder.name}</div>
+                    <div class="folder-description">${folder.description || 'Без описания'}</div>
+                    <div class="folder-actions">
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); viewFolderDocuments(${folder.id})">
+                            <i class="fas fa-eye"></i> Открыть
+                        </button>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); deleteFolder(${folder.id})">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateFolderSelects() {
+            const folderSelect = document.getElementById('folder');
+            const folderFilter = document.getElementById('folderFilter');
+            
+            const options = allFolders.map(f => 
+                `<option value="${f.id}">${f.name}</option>`
+            ).join('');
+            
+            folderSelect.innerHTML = '<option value="">Выберите папку</option>' + options;
+            folderFilter.innerHTML = '<option value="">Все папки</option>' + options;
+        }
+
         async function loadDocuments() {
+            try {
+                const response = await fetch('/admin/api/documents', {
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) throw new Error('Failed to load documents');
+                
+                allDocuments = await response.json() || [];
+                renderDocuments(allDocuments);
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                showStatus('Ошибка загрузки документов', 'error');
+            }
+        }
+
+        function renderDocuments(documents) {
             const container = document.getElementById('documents-container');
             const table = container.querySelector('table');
             const loading = container.querySelector('.loading');
             const tableBody = document.getElementById('documents-table-body');
 
-            loading.style.display = 'block';
-            table.style.display = 'none';
-            document.getElementById('status-message').style.display = 'none';
-
-            try {
-                const response = await fetch('/admin/api/documents', {
-                    method: 'GET',
-                    credentials: 'same-origin'
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        showStatus('Необходимо войти в систему. Перенаправление...', 'error');
-                        setTimeout(() => {
-                            window.location.href = '/admin/login.html';
-                        }, 2000);
-                        return;
-                    }
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                allDocuments = await response.json() || [];
-                loading.style.display = 'none';
-                
-                renderDocuments(allDocuments);
-                table.style.display = 'table';
-
-                if (allDocuments.length > 0) {
-                    showStatus(`Успешно загружено ${allDocuments.length} документов`, 'success');
-                } else {
-                    showStatus('Документы отсутствуют', 'info');
-                }
-
-            } catch (error) {
-                console.error('Ошибка при загрузке документов:', error);
-                loading.style.display = 'none';
-                showStatus(`Ошибка загрузки: ${error.message}`, 'error');
-            }
-        }
-
-        function renderDocuments(documents) {
-            const tableBody = document.getElementById('documents-table-body');
+            loading.style.display = 'none';
             tableBody.innerHTML = '';
 
             if (!documents || documents.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="no-data">Документов пока нет</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="no-data">Документов пока нет</td></tr>';
+                table.style.display = 'table';
                 return;
             }
 
@@ -473,12 +650,11 @@
                 iconCell.innerHTML = `<i class="fas ${getFileIcon(doc.file_type)} file-icon"></i>`;
                 
                 row.insertCell(1).textContent = doc.title || 'Без названия';
-                row.insertCell(2).textContent = doc.description || 'Без описания';
-                row.insertCell(3).textContent = doc.category || 'Без категории';
-                row.insertCell(4).textContent = formatFileSize(doc.file_size);
-                row.insertCell(5).textContent = formatDate(doc.created_at);
+                row.insertCell(2).textContent = doc.folder_name || 'Без папки';
+                row.insertCell(3).textContent = formatFileSize(doc.file_size);
+                row.insertCell(4).textContent = formatDate(doc.created_at);
                 
-                const actionsCell = row.insertCell(6);
+                const actionsCell = row.insertCell(5);
                 actionsCell.innerHTML = `
                     <div class="action-buttons">
                         <button class="btn" onclick="downloadDocument(${doc.id})">
@@ -496,31 +672,55 @@
                     row.style.opacity = '1';
                 }, index * 50);
             });
+
+            table.style.display = 'table';
+        }
+
+        async function viewFolderDocuments(folderId) {
+            switchTab('documents');
+            document.getElementById('folderFilter').value = folderId;
+            performSearch();
+        }
+
+        function switchTab(tab) {
+            currentView = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event?.target.classList.add('active');
+            
+            if (tab === 'folders') {
+                document.getElementById('folders-view').style.display = 'block';
+                document.getElementById('documents-view').style.display = 'none';
+                loadFolders();
+            } else {
+                document.getElementById('folders-view').style.display = 'none';
+                document.getElementById('documents-view').style.display = 'block';
+                loadDocuments();
+            }
         }
 
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
-            const categoryFilter = document.getElementById('categoryFilter');
-
-            const performSearch = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const category = categoryFilter.value;
-
-                const filtered = allDocuments.filter(doc => {
-                    const matchesSearch = !searchTerm || 
-                        doc.title.toLowerCase().includes(searchTerm) ||
-                        (doc.description && doc.description.toLowerCase().includes(searchTerm));
-                    
-                    const matchesCategory = !category || doc.category === category;
-
-                    return matchesSearch && matchesCategory;
-                });
-
-                renderDocuments(filtered);
-            };
+            const folderFilter = document.getElementById('folderFilter');
 
             searchInput.addEventListener('input', performSearch);
-            categoryFilter.addEventListener('change', performSearch);
+            folderFilter.addEventListener('change', performSearch);
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const folderId = document.getElementById('folderFilter').value;
+
+            const filtered = allDocuments.filter(doc => {
+                const matchesSearch = !searchTerm || 
+                    doc.title.toLowerCase().includes(searchTerm) ||
+                    (doc.description && doc.description.toLowerCase().includes(searchTerm));
+                
+                const matchesFolder = !folderId || doc.folder_id == folderId;
+
+                return matchesSearch && matchesFolder;
+            });
+
+            renderDocuments(filtered);
         }
 
         function openUploadModal() {
@@ -531,6 +731,15 @@
             document.getElementById('uploadModal').classList.remove('active');
             document.getElementById('uploadForm').reset();
             document.getElementById('fileInfo').classList.remove('show');
+        }
+
+        function openFolderModal() {
+            document.getElementById('folderModal').classList.add('active');
+        }
+
+        function closeFolderModal() {
+            document.getElementById('folderModal').classList.remove('active');
+            document.getElementById('folderForm').reset();
         }
 
         function setupFileUpload() {
@@ -594,13 +803,43 @@
 
                 showStatus('Документ успешно загружен!', 'success');
                 closeUploadModal();
-                loadDocuments();
+                loadData();
             } catch (error) {
                 console.error('Error uploading document:', error);
                 showStatus('Ошибка загрузки документа', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-upload"></i> Загрузить документ';
+            }
+        });
+
+        document.getElementById('folderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const folderData = {
+                name: document.getElementById('folderName').value,
+                description: document.getElementById('folderDescription').value,
+                icon: document.getElementById('folderIcon').value
+            };
+
+            try {
+                const response = await fetch('/admin/api/folders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(folderData),
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) throw new Error('Failed to create folder');
+
+                showStatus('Папка успешно создана!', 'success');
+                closeFolderModal();
+                loadFolders();
+            } catch (error) {
+                console.error('Error creating folder:', error);
+                showStatus('Ошибка создания папки', 'error');
             }
         });
 
@@ -627,13 +866,40 @@
             }
         }
 
+        async function deleteFolder(id) {
+            if (!confirm('Вы уверены, что хотите удалить эту папку? Документы в ней не будут удалены.')) return;
+
+            try {
+                const response = await fetch(`/admin/api/folders/${id}`, {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete folder');
+
+                showStatus('Папка успешно удалена', 'success');
+                loadFolders();
+            } catch (error) {
+                console.error('Error deleting folder:', error);
+                showStatus('Ошибка удаления папки', 'error');
+            }
+        }
+
+        function loadData() {
+            if (currentView === 'folders') {
+                loadFolders();
+            } else {
+                loadDocuments();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            loadDocuments();
+            loadFolders();
             setupSearch();
             setupFileUpload();
         });
 
-        setInterval(loadDocuments, 60000);
+        setInterval(loadData, 60000);
     </script>
 </body>
 </html>

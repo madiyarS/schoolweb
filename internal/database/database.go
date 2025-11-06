@@ -37,53 +37,134 @@ func New(filepath string) (*Database, error) {
 }
 
 func (d *Database) createTables() error {
-	createContactsTableSQL := `CREATE TABLE IF NOT EXISTS contacts (
-		"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"name" TEXT NOT NULL,
-		"email" TEXT NOT NULL,
-        "phone" TEXT,
-		"message" TEXT NOT NULL,
-		"created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
+	queries := []string{
+		// Существующие таблицы...
+		`CREATE TABLE IF NOT EXISTS contacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT,
+            message TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
 
-	if _, err := d.db.Exec(createContactsTableSQL); err != nil {
-		return fmt.Errorf("error creating contacts table: %v", err)
+		`CREATE TABLE IF NOT EXISTS news (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            image_url TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+
+		// Таблица папок
+		`CREATE TABLE IF NOT EXISTS folders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            description TEXT,
+            icon TEXT DEFAULT 'folder',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+
+		// Обновленная таблица документов
+		`CREATE TABLE IF NOT EXISTS documents (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            file_name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            file_size INTEGER NOT NULL,
+            file_type TEXT NOT NULL,
+            category TEXT,
+            folder_id INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL
+        )`,
 	}
-	log.Println("Table 'contacts' successfully created or already exists")
 
-	createNewsTableSQL := `CREATE TABLE IF NOT EXISTS news (
-		"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"title" TEXT NOT NULL,
-		"content" TEXT NOT NULL,
-        "image_url" TEXT,
-		"created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-
-	if _, err := d.db.Exec(createNewsTableSQL); err != nil {
-		return fmt.Errorf("error creating news table: %v", err)
+	for _, query := range queries {
+		if _, err := d.db.Exec(query); err != nil {
+			return err
+		}
 	}
-	log.Println("Table 'news' successfully created or already exists")
 
-	// Create documents table
-	createDocumentsTableSQL := `CREATE TABLE IF NOT EXISTS documents (
-		"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"title" TEXT NOT NULL,
-		"description" TEXT,
-		"file_name" TEXT NOT NULL,
-		"file_path" TEXT NOT NULL,
-		"file_size" INTEGER NOT NULL,
-		"file_type" TEXT NOT NULL,
-		"category" TEXT,
-		"created_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"updated_at" DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
+	log.Println("Database tables created successfully")
 
-	if _, err := d.db.Exec(createDocumentsTableSQL); err != nil {
-		return fmt.Errorf("error creating documents table: %v", err)
+	// Выполняем миграции для существующих таблиц
+	if err := d.migrateTables(); err != nil {
+		return fmt.Errorf("error migrating tables: %v", err)
 	}
-	log.Println("Table 'documents' successfully created or already exists")
+
+	// Создаем дефолтные папки
+	d.createDefaultFolders()
 
 	return nil
+}
+
+// migrateTables выполняет миграции для обновления существующих таблиц
+func (d *Database) migrateTables() error {
+	// Проверяем и добавляем folder_id в таблицу documents
+	if err := d.addColumnIfNotExists("documents", "folder_id", "INTEGER"); err != nil {
+		return err
+	}
+
+	// Проверяем и добавляем updated_at в таблицу documents
+	if err := d.addColumnIfNotExists("documents", "updated_at", "DATETIME DEFAULT CURRENT_TIMESTAMP"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// addColumnIfNotExists проверяет существование колонки и добавляет её, если её нет
+func (d *Database) addColumnIfNotExists(tableName, columnName, columnDef string) error {
+	// Проверяем, существует ли колонка
+	var count int
+	query := fmt.Sprintf(
+		"SELECT COUNT(*) FROM pragma_table_info('%s') WHERE name='%s'",
+		tableName, columnName,
+	)
+
+	err := d.db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return fmt.Errorf("error checking column %s in table %s: %v", columnName, tableName, err)
+	}
+
+	// Если колонка не существует, добавляем её
+	if count == 0 {
+		alterQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, columnName, columnDef)
+		if _, err := d.db.Exec(alterQuery); err != nil {
+			return fmt.Errorf("error adding column %s to table %s: %v", columnName, tableName, err)
+		}
+		log.Printf("Added column %s to table %s", columnName, tableName)
+	}
+
+	return nil
+}
+
+func (d *Database) createDefaultFolders() {
+	defaultFolders := []struct {
+		name        string
+		description string
+		icon        string
+	}{
+		{"Учебные материалы", "Учебные пособия и материалы для уроков", "book"},
+		{"Документы школы", "Официальные документы и уставы", "file-text"},
+		{"Формы и заявления", "Формы для заполнения родителями", "file-invoice"},
+		{"Правила и положения", "Правила внутреннего распорядка", "gavel"},
+		{"Расписания", "Расписание занятий и мероприятий", "calendar"},
+		{"Прочее", "Другие документы", "folder"},
+	}
+
+	for _, folder := range defaultFolders {
+		_, err := d.db.Exec(
+			`INSERT OR IGNORE INTO folders (name, description, icon) VALUES (?, ?, ?)`,
+			folder.name, folder.description, folder.icon,
+		)
+		if err != nil {
+			log.Printf("Warning: failed to create default folder %s: %v", folder.name, err)
+		}
+	}
 }
 
 func (d *Database) Close() error {
@@ -259,8 +340,8 @@ func (d *Database) DeleteNewsArticle(id string) error {
 // --- Document Operations ---
 
 func (d *Database) SaveDocument(doc models.Document) (int64, error) {
-	insertSQL := `INSERT INTO documents(title, description, file_name, file_path, file_size, file_type, category, created_at, updated_at) 
-				  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	insertSQL := `INSERT INTO documents(title, description, file_name, file_path, file_size, file_type, category, folder_id, created_at, updated_at) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	statement, err := d.db.Prepare(insertSQL)
 	if err != nil {
@@ -276,6 +357,7 @@ func (d *Database) SaveDocument(doc models.Document) (int64, error) {
 		doc.FileSize,
 		doc.FileType,
 		doc.Category,
+		doc.FolderID, // Добавлено
 		time.Now(),
 		time.Now(),
 	)
@@ -293,9 +375,15 @@ func (d *Database) SaveDocument(doc models.Document) (int64, error) {
 }
 
 func (d *Database) GetDocuments() ([]models.Document, error) {
-	query := `SELECT id, title, COALESCE(description, '') as description, file_name, file_path, 
-			  file_size, file_type, COALESCE(category, '') as category, created_at, updated_at
-			  FROM documents ORDER BY created_at DESC`
+	query := `SELECT d.id, d.title, COALESCE(d.description, '') as description, 
+              d.file_name, d.file_path, d.file_size, d.file_type, 
+              COALESCE(d.category, '') as category, 
+              COALESCE(d.folder_id, 0) as folder_id,
+              COALESCE(f.name, '') as folder_name,
+              d.created_at, d.updated_at
+              FROM documents d
+              LEFT JOIN folders f ON d.folder_id = f.id
+              ORDER BY d.created_at DESC`
 
 	rows, err := d.db.Query(query)
 	if err != nil {
@@ -315,6 +403,8 @@ func (d *Database) GetDocuments() ([]models.Document, error) {
 			&doc.FileSize,
 			&doc.FileType,
 			&doc.Category,
+			&doc.FolderID,
+			&doc.FolderName,
 			&doc.CreatedAt,
 			&doc.UpdatedAt,
 		); err != nil {
@@ -334,9 +424,14 @@ func (d *Database) GetDocuments() ([]models.Document, error) {
 
 func (d *Database) GetDocument(id string) (models.Document, error) {
 	var doc models.Document
-	query := `SELECT id, title, COALESCE(description, '') as description, file_name, file_path,
-			  file_size, file_type, COALESCE(category, '') as category, created_at, updated_at
-			  FROM documents WHERE id = ?`
+	query := `SELECT d.id, d.title, COALESCE(d.description, '') as description, d.file_name, d.file_path,
+			  d.file_size, d.file_type, COALESCE(d.category, '') as category, 
+			  COALESCE(d.folder_id, 0) as folder_id,
+			  COALESCE(f.name, '') as folder_name,
+			  d.created_at, d.updated_at
+			  FROM documents d
+			  LEFT JOIN folders f ON d.folder_id = f.id
+			  WHERE d.id = ?`
 
 	err := d.db.QueryRow(query, id).Scan(
 		&doc.ID,
@@ -347,6 +442,8 @@ func (d *Database) GetDocument(id string) (models.Document, error) {
 		&doc.FileSize,
 		&doc.FileType,
 		&doc.Category,
+		&doc.FolderID,
+		&doc.FolderName,
 		&doc.CreatedAt,
 		&doc.UpdatedAt,
 	)
@@ -361,9 +458,14 @@ func (d *Database) GetDocument(id string) (models.Document, error) {
 }
 
 func (d *Database) GetDocumentsByCategory(category string) ([]models.Document, error) {
-	query := `SELECT id, title, COALESCE(description, '') as description, file_name, file_path,
-			  file_size, file_type, COALESCE(category, '') as category, created_at, updated_at
-			  FROM documents WHERE category = ? ORDER BY created_at DESC`
+	query := `SELECT d.id, d.title, COALESCE(d.description, '') as description, d.file_name, d.file_path,
+			  d.file_size, d.file_type, COALESCE(d.category, '') as category, 
+			  COALESCE(d.folder_id, 0) as folder_id,
+			  COALESCE(f.name, '') as folder_name,
+			  d.created_at, d.updated_at
+			  FROM documents d
+			  LEFT JOIN folders f ON d.folder_id = f.id
+			  WHERE d.category = ? ORDER BY d.created_at DESC`
 
 	rows, err := d.db.Query(query, category)
 	if err != nil {
@@ -383,6 +485,8 @@ func (d *Database) GetDocumentsByCategory(category string) ([]models.Document, e
 			&doc.FileSize,
 			&doc.FileType,
 			&doc.Category,
+			&doc.FolderID,
+			&doc.FolderName,
 			&doc.CreatedAt,
 			&doc.UpdatedAt,
 		); err != nil {
@@ -440,6 +544,141 @@ func (d *Database) DeleteDocument(id string) error {
 
 	log.Printf("Document with ID %s successfully deleted", id)
 	return nil
+}
+
+// --- Folder Operations ---
+
+func (d *Database) GetFolders() ([]models.Folder, error) {
+	query := `SELECT id, name, COALESCE(description, '') as description, 
+			  COALESCE(icon, 'folder') as icon, created_at 
+			  FROM folders ORDER BY name ASC`
+
+	rows, err := d.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("GetFolders query failed: %v", err)
+	}
+	defer rows.Close()
+
+	var folders []models.Folder
+	for rows.Next() {
+		var folder models.Folder
+		if err := rows.Scan(&folder.ID, &folder.Name, &folder.Description, &folder.Icon, &folder.CreatedAt); err != nil {
+			log.Printf("Error scanning folder: %v", err)
+			continue
+		}
+		folders = append(folders, folder)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating folders: %v", err)
+	}
+
+	log.Printf("Retrieved %d folders from database", len(folders))
+	return folders, nil
+}
+
+func (d *Database) CreateFolder(name, description, icon string) (int64, error) {
+	insertSQL := `INSERT INTO folders(name, description, icon, created_at) VALUES (?, ?, ?, ?)`
+	statement, err := d.db.Prepare(insertSQL)
+	if err != nil {
+		return 0, fmt.Errorf("error preparing CreateFolder statement: %v", err)
+	}
+	defer statement.Close()
+
+	result, err := statement.Exec(name, description, icon, time.Now())
+	if err != nil {
+		return 0, fmt.Errorf("error creating folder: %v", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("error getting last insert id: %v", err)
+	}
+
+	log.Printf("Folder successfully created: %s (ID: %d)", name, id)
+	return id, nil
+}
+
+func (d *Database) DeleteFolder(id string) error {
+	log.Printf("Deleting folder with ID: %s", id)
+
+	// Check if folder exists
+	var folderName string
+	err := d.db.QueryRow("SELECT name FROM folders WHERE id = ?", id).Scan(&folderName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("folder with ID %s not found", id)
+		}
+		return fmt.Errorf("error getting folder info: %v", err)
+	}
+
+	// Delete the folder (documents will have folder_id set to NULL due to ON DELETE SET NULL)
+	deleteSQL := `DELETE FROM folders WHERE id = ?`
+	result, err := d.db.Exec(deleteSQL, id)
+	if err != nil {
+		return fmt.Errorf("error deleting folder: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("folder with ID %s not found", id)
+	}
+
+	log.Printf("Folder with ID %s (%s) successfully deleted", id, folderName)
+	return nil
+}
+
+func (d *Database) GetDocumentsByFolder(folderID string) ([]models.Document, error) {
+	query := `SELECT d.id, d.title, COALESCE(d.description, '') as description, 
+              d.file_name, d.file_path, d.file_size, d.file_type, 
+              COALESCE(d.category, '') as category, 
+              COALESCE(d.folder_id, 0) as folder_id,
+              COALESCE(f.name, '') as folder_name,
+              d.created_at, d.updated_at
+              FROM documents d
+              LEFT JOIN folders f ON d.folder_id = f.id
+              WHERE d.folder_id = ?
+              ORDER BY d.created_at DESC`
+
+	rows, err := d.db.Query(query, folderID)
+	if err != nil {
+		return nil, fmt.Errorf("GetDocumentsByFolder query failed: %v", err)
+	}
+	defer rows.Close()
+
+	var documents []models.Document
+	for rows.Next() {
+		var doc models.Document
+		if err := rows.Scan(
+			&doc.ID,
+			&doc.Title,
+			&doc.Description,
+			&doc.FileName,
+			&doc.FilePath,
+			&doc.FileSize,
+			&doc.FileType,
+			&doc.Category,
+			&doc.FolderID,
+			&doc.FolderName,
+			&doc.CreatedAt,
+			&doc.UpdatedAt,
+		); err != nil {
+			log.Printf("Error scanning document: %v", err)
+			continue
+		}
+		documents = append(documents, doc)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating documents: %v", err)
+	}
+
+	log.Printf("Retrieved %d documents for folder ID '%s'", len(documents), folderID)
+	return documents, nil
 }
 
 func (d *Database) Ping() error {

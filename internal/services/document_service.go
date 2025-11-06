@@ -29,7 +29,7 @@ func NewDocumentService(db *database.Database, uploadPath string) *DocumentServi
 	}
 }
 
-func (s *DocumentService) UploadDocument(title, description, category string, file multipart.File, fileHeader *multipart.FileHeader) (*models.Document, error) {
+func (s *DocumentService) UploadDocument(title, description, category string, folderID int, file multipart.File, fileHeader *multipart.FileHeader) (*models.Document, error) {
 	// Generate unique filename
 	timestamp := time.Now().Unix()
 	fileName := fmt.Sprintf("%d_%s", timestamp, fileHeader.Filename)
@@ -57,6 +57,7 @@ func (s *DocumentService) UploadDocument(title, description, category string, fi
 		FileSize:    fileHeader.Size,
 		FileType:    fileHeader.Header.Get("Content-Type"),
 		Category:    category,
+		FolderID:    folderID, // Добавлено
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}

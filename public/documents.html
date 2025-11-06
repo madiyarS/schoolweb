@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,8 +13,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* Header всегда видимый */
+        body {
+            padding-top: 80px;
+        }
+
+        #main-header {
+            background-color: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        #main-header .logo {
+            color: var(--primary-dark-blue) !important;
+        }
+
+        #main-header .logo span {
+            color: var(--accent-gold) !important;
+        }
+
+        #main-header .nav-menu a {
+            color: var(--primary-dark-blue) !important;
+        }
+
+        #main-header .nav-menu a.active::after {
+            width: 100%;
+            background-color: var(--accent-gold) !important;
+        }
+
+        #main-header .btn-primary {
+            background-color: var(--accent-gold) !important;
+            color: var(--primary-dark-blue) !important;
+        }
+
+        #main-header .mobile-menu-toggle {
+            color: var(--primary-dark-blue) !important;
+        }
+
         .documents-page {
-            padding-top: 100px;
             min-height: 100vh;
             background-color: var(--bg-light-gray);
         }
@@ -23,6 +61,13 @@
             padding: 4rem 0;
             text-align: center;
             margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .documents-header .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .documents-header h1 {
@@ -36,25 +81,177 @@
             font-size: 1.1rem;
         }
 
-        .search-filter {
+        .google-drive-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(66, 133, 244, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .google-drive-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        .google-drive-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(66, 133, 244, 0.6);
+            animation: none;
+        }
+
+        .google-drive-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .google-drive-btn i {
+            font-size: 1.5rem;
+            animation: icon-bounce 2s ease-in-out infinite;
+        }
+
+        .google-drive-btn:hover i {
+            animation: icon-spin 0.6s ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(66, 133, 244, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(66, 133, 244, 0.6);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes icon-bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes icon-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .breadcrumb {
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 2rem;
+            font-size: 0.95rem;
             flex-wrap: wrap;
         }
 
-        .search-filter input,
-        .search-filter select {
-            padding: 0.75rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-family: var(--font-body);
+        .breadcrumb a {
+            color: var(--accent-light-blue);
+            text-decoration: none;
+            transition: color 0.3s;
         }
 
-        .search-filter input {
-            flex: 1;
-            min-width: 250px;
+        .breadcrumb a:hover {
+            color: var(--primary-dark-blue);
+        }
+
+        .breadcrumb i {
+            color: var(--text-light-gray);
+            font-size: 0.8rem;
+        }
+
+        .breadcrumb span {
+            color: var(--text-dark-gray);
+            font-weight: 500;
+        }
+
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .folder-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .folder-icon {
+            font-size: 3.5rem;
+            color: var(--accent-light-blue);
+            margin-bottom: 1rem;
+        }
+
+        .folder-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .folder-description {
+            color: var(--text-light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .folder-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-light-gray);
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-dark-gray);
         }
 
         .documents-grid {
@@ -71,6 +268,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
 
         .document-card:hover {
@@ -80,7 +279,6 @@
 
         .document-icon {
             font-size: 3rem;
-            color: var(--accent-light-blue);
             margin-bottom: 1rem;
         }
 
@@ -88,12 +286,14 @@
         .document-icon.word { color: #2b579a; }
         .document-icon.excel { color: #217346; }
         .document-icon.powerpoint { color: #d24726; }
+        .document-icon.default { color: var(--accent-light-blue); }
 
         .document-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--primary-dark-blue);
             margin-bottom: 0.5rem;
+            line-height: 1.4;
         }
 
         .document-description {
@@ -101,6 +301,7 @@
             margin-bottom: 1rem;
             font-size: 0.9rem;
             line-height: 1.5;
+            flex: 1;
         }
 
         .document-meta {
@@ -138,11 +339,31 @@
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
+            text-decoration: none;
         }
 
         .document-download:hover {
             background: var(--primary-dark-blue);
             transform: translateY(-2px);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-dark-blue);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            background: var(--accent-light-blue);
+            transform: translateX(-5px);
         }
 
         .loading {
@@ -151,44 +372,24 @@
             color: var(--text-light-gray);
         }
 
-        .no-documents {
+        .no-items {
             text-align: center;
             padding: 3rem;
             color: var(--text-light-gray);
             font-style: italic;
         }
 
-        .category-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: var(--accent-gold);
-            color: var(--primary-dark-blue);
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .empty-folder {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 0.75rem;
+        }
+
+        .empty-folder i {
+            font-size: 4rem;
+            color: #ddd;
             margin-bottom: 1rem;
-        }
-        .google-drive-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #4285f4;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .google-drive-btn:hover {
-            background: #3367d6;
-            transform: translateY(-2px);
-        }
-
-        .google-drive-btn i {
-            font-size: 1.1rem;
         }
 
         @media (max-width: 768px) {
@@ -196,16 +397,23 @@
                 font-size: 2rem;
             }
 
+            .google-drive-btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .google-drive-btn i {
+                font-size: 1.25rem;
+            }
+
+            .folders-grid,
             .documents-grid {
                 grid-template-columns: 1fr;
             }
 
-            .search-filter {
-                flex-direction: column;
-            }
-
-            .search-filter input {
-                min-width: 100%;
+            .breadcrumb {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -238,33 +446,33 @@
     <main class="documents-page">
         <div class="documents-header">
             <div class="container">
-                <h1><i class="fas fa-file-alt"></i> Документы школы</h1>
+                <h1><i class="fas fa-folder-open"></i> Документы школы</h1>
                 <p>Полезные материалы и документы для учеников и родителей</p>
             </div>
-        </div>
-
-        <div class="container">
-            <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Поиск документов...">
-                <select id="categoryFilter">
-                    <option value="">Все категории</option>
-                    <option value="Учебные материалы">Учебные материалы</option>
-                    <option value="Документы">Документы</option>
-                    <option value="Формы">Формы</option>
-                    <option value="Правила">Правила</option>
-                    <option value="Другое">Другое</option>
-                </select>
-                <a href="https://drive.google.com/drive/folders/102gSpARjYCAimWJuI1DglncQHn0LBy6Y?usp=drive_link" target="_blank" class="google-drive-btn">
+            <a href="https://drive.google.com/drive/folders/102gSpARjYCAimWJuI1DglncQHn0LBy6Y?usp=drive_link" target="_blank" class="google-drive-btn">
                     <i class="fab fa-google-drive"></i>
                     <span>Документы для ГОС аттестации</span>
                 </a>
+        </div>
+
+        <div class="container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb" id="breadcrumb">
+                <a href="/documents.html" onclick="showFolders(event)">
+                    <i class="fas fa-home"></i> Все папки
+                </a>
             </div>
 
-            <div id="documentsContainer">
+            <!-- Folders View -->
+            <div id="foldersContainer">
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p>Загрузка документов...</p>
+                    <p>Загрузка папок...</p>
                 </div>
+            </div>
+
+            <!-- Documents View -->
+            <div id="documentsContainer" style="display: none;">
             </div>
         </div>
     </main>
@@ -316,22 +524,29 @@
 
     <script src="script.js"></script>
     <script>
-        // Делаем header видимым сразу
-        document.addEventListener('DOMContentLoaded', () => {
-            const header = document.getElementById('main-header');
-            if (header) {
-                header.classList.add('scrolled');
-            }
-        });
-
-        let allDocuments = [];
+        let allFolders = [];
+        let currentFolderId = null;
+        let folderDocumentCounts = {};
 
         function getFileIcon(fileType) {
             if (fileType.includes('pdf')) return { icon: 'fa-file-pdf', class: 'pdf' };
             if (fileType.includes('word') || fileType.includes('document')) return { icon: 'fa-file-word', class: 'word' };
             if (fileType.includes('excel') || fileType.includes('spreadsheet')) return { icon: 'fa-file-excel', class: 'excel' };
             if (fileType.includes('powerpoint') || fileType.includes('presentation')) return { icon: 'fa-file-powerpoint', class: 'powerpoint' };
-            return { icon: 'fa-file', class: '' };
+            return { icon: 'fa-file', class: 'default' };
+        }
+
+        function getFolderIcon(icon) {
+            const icons = {
+                'folder': 'fa-folder',
+                'book': 'fa-book',
+                'file-text': 'fa-file-alt',
+                'file-invoice': 'fa-file-invoice',
+                'gavel': 'fa-gavel',
+                'calendar': 'fa-calendar-alt',
+                'graduation-cap': 'fa-graduation-cap'
+            };
+            return icons[icon] || 'fa-folder';
         }
 
         function formatFileSize(bytes) {
@@ -356,26 +571,149 @@
             }
         }
 
-        function renderDocuments(documents) {
-            const container = document.getElementById('documentsContainer');
-
-            if (!documents || documents.length === 0) {
+        async function loadFolders() {
+            const container = document.getElementById('foldersContainer');
+            
+            try {
+                const response = await fetch('/api/folders');
+                if (!response.ok) throw new Error('Failed to load folders');
+                
+                allFolders = await response.json() || [];
+                
+                // Загружаем количество документов для каждой папки
+                await loadDocumentCounts();
+                
+                renderFolders();
+            } catch (error) {
+                console.error('Error loading folders:', error);
                 container.innerHTML = `
-                    <div class="no-documents">
+                    <div class="no-items">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem; color: #ef4444;"></i>
+                        <p>Ошибка загрузки папок</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadDocumentCounts() {
+            try {
+                const response = await fetch('/api/documents');
+                if (response.ok) {
+                    const documents = await response.json();
+                    folderDocumentCounts = {};
+                    
+                    documents.forEach(doc => {
+                        if (doc.folder_id) {
+                            folderDocumentCounts[doc.folder_id] = (folderDocumentCounts[doc.folder_id] || 0) + 1;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading document counts:', error);
+            }
+        }
+
+        function renderFolders() {
+            const container = document.getElementById('foldersContainer');
+            
+            if (!allFolders || allFolders.length === 0) {
+                container.innerHTML = `
+                    <div class="no-items">
                         <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; color: #ddd;"></i>
-                        <p>Документы не найдены</p>
+                        <p>Папок пока нет</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = `
+                <div class="folders-grid">
+                    ${allFolders.map(folder => {
+                        const count = folderDocumentCounts[folder.id] || 0;
+                        return `
+                            <div class="folder-card" onclick="openFolder(${folder.id}, '${folder.name.replace(/'/g, "\\'")}')">
+                                <div class="folder-icon">
+                                    <i class="fas ${getFolderIcon(folder.icon)}"></i>
+                                </div>
+                                <div class="folder-name">${folder.name}</div>
+                                <div class="folder-description">${folder.description || 'Без описания'}</div>
+                                <div class="folder-count">
+                                    <i class="fas fa-file"></i>
+                                    <span>${count} ${count === 1 ? 'документ' : count < 5 ? 'документа' : 'документов'}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function openFolder(folderId, folderName) {
+            currentFolderId = folderId;
+            
+            // Обновляем breadcrumb
+            document.getElementById('breadcrumb').innerHTML = `
+                <a href="/documents.html" onclick="showFolders(event)">
+                    <i class="fas fa-home"></i> Все папки
+                </a>
+                <i class="fas fa-chevron-right"></i>
+                <span>${folderName}</span>
+            `;
+            
+            // Скрываем папки, показываем документы
+            document.getElementById('foldersContainer').style.display = 'none';
+            document.getElementById('documentsContainer').style.display = 'block';
+            
+            await loadFolderDocuments(folderId, folderName);
+        }
+
+        async function loadFolderDocuments(folderId, folderName) {
+            const container = document.getElementById('documentsContainer');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p>Загрузка документов...</p></div>';
+            
+            try {
+                const response = await fetch(`/api/folders/${folderId}/documents`);
+                if (!response.ok) throw new Error('Failed to load documents');
+                
+                const documents = await response.json() || [];
+                renderDocuments(documents, folderName);
+            } catch (error) {
+                console.error('Error loading folder documents:', error);
+                container.innerHTML = `
+                    <div class="no-items">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444;"></i>
+                        <p>Ошибка загрузки документов</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDocuments(documents, folderName) {
+            const container = document.getElementById('documentsContainer');
+            
+            if (!documents || documents.length === 0) {
+                container.innerHTML = `
+                    <a href="/documents.html" onclick="showFolders(event)" class="back-button">
+                        <i class="fas fa-arrow-left"></i> Назад к папкам
+                    </a>
+                    <div class="empty-folder">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Папка "${folderName}" пуста</h3>
+                        <p>В этой папке пока нет документов</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <a href="/documents.html" onclick="showFolders(event)" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Назад к папкам
+                </a>
                 <div class="documents-grid">
                     ${documents.map(doc => {
                         const fileIcon = getFileIcon(doc.file_type);
                         return `
                             <div class="document-card" onclick="downloadDocument(${doc.id})">
-                                <div class="category-badge">${doc.category || 'Без категории'}</div>
                                 <div class="document-icon ${fileIcon.class}">
                                     <i class="fas ${fileIcon.icon}"></i>
                                 </div>
@@ -385,10 +723,10 @@
                                     <span><i class="fas fa-calendar"></i> ${formatDate(doc.created_at)}</span>
                                     <span><i class="fas fa-file"></i> ${formatFileSize(doc.file_size)}</span>
                                 </div>
-                                <div class="document-download">
+                                <a href="/api/documents/${doc.id}/download" class="document-download" onclick="event.stopPropagation()">
                                     <i class="fas fa-download"></i>
                                     <span>Скачать</span>
-                                </div>
+                                </a>
                             </div>
                         `;
                     }).join('')}
@@ -396,49 +734,22 @@
             `;
         }
 
-        async function loadDocuments() {
-            const container = document.getElementById('documentsContainer');
+        function showFolders(event) {
+            event.preventDefault();
+            currentFolderId = null;
             
-            try {
-                const response = await fetch('/api/documents');
-                if (!response.ok) throw new Error('Failed to load documents');
-                
-                allDocuments = await response.json() || [];
-                renderDocuments(allDocuments);
-            } catch (error) {
-                console.error('Error loading documents:', error);
-                container.innerHTML = `
-                    <div class="no-documents">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem; color: #ef4444;"></i>
-                        <p>Ошибка загрузки документов</p>
-                    </div>
-                `;
-            }
-        }
-
-        function setupSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const categoryFilter = document.getElementById('categoryFilter');
-
-            const performSearch = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const category = categoryFilter.value;
-
-                const filtered = allDocuments.filter(doc => {
-                    const matchesSearch = !searchTerm || 
-                        doc.title.toLowerCase().includes(searchTerm) ||
-                        (doc.description && doc.description.toLowerCase().includes(searchTerm));
-                    
-                    const matchesCategory = !category || doc.category === category;
-
-                    return matchesSearch && matchesCategory;
-                });
-
-                renderDocuments(filtered);
-            };
-
-            searchInput.addEventListener('input', performSearch);
-            categoryFilter.addEventListener('change', performSearch);
+            // Обновляем breadcrumb
+            document.getElementById('breadcrumb').innerHTML = `
+                <a href="/documents.html" onclick="showFolders(event)">
+                    <i class="fas fa-home"></i> Все папки
+                </a>
+            `;
+            
+            // Показываем папки, скрываем документы
+            document.getElementById('foldersContainer').style.display = 'block';
+            document.getElementById('documentsContainer').style.display = 'none';
+            
+            renderFolders();
         }
 
         function downloadDocument(id) {
@@ -446,8 +757,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadDocuments();
-            setupSearch();
+            loadFolders();
         });
     </script>
 </body>
