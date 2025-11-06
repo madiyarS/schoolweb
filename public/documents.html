@@ -39,9 +39,8 @@
         .search-filter {
             display: flex;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
-            align-items: center;
         }
 
         .search-filter input,
@@ -56,30 +55,6 @@
         .search-filter input {
             flex: 1;
             min-width: 250px;
-        }
-
-        /* Новая кнопка Google Диск */
-        .google-drive-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #4285f4;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .google-drive-btn:hover {
-            background: #3367d6;
-            transform: translateY(-2px);
-        }
-
-        .google-drive-btn i {
-            font-size: 1.1rem;
         }
 
         .documents-grid {
@@ -193,6 +168,28 @@
             font-weight: 600;
             margin-bottom: 1rem;
         }
+        .google-drive-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #4285f4;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .google-drive-btn:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        .google-drive-btn i {
+            font-size: 1.1rem;
+        }
 
         @media (max-width: 768px) {
             .documents-header h1 {
@@ -205,16 +202,10 @@
 
             .search-filter {
                 flex-direction: column;
-                align-items: stretch;
             }
 
             .search-filter input {
                 min-width: 100%;
-            }
-
-            .google-drive-btn {
-                width: 100%;
-                justify-content: center;
             }
         }
     </style>
@@ -263,7 +254,6 @@
                     <option value="Правила">Правила</option>
                     <option value="Другое">Другое</option>
                 </select>
-                <!-- Кнопка Google Диск -->
                 <a href="https://drive.google.com/drive/folders/102gSpARjYCAimWJuI1DglncQHn0LBy6Y?usp=drive_link" target="_blank" class="google-drive-btn">
                     <i class="fab fa-google-drive"></i>
                     <span>Гугл Диск</span>
@@ -336,17 +326,12 @@
 
         let allDocuments = [];
 
-        function getFileIcon(fileType, fileName) {
-            const name = fileName.toLowerCase();
-            if (fileType.includes('pdf') || name.endsWith('.pdf')) return {icon:'fa-file-pdf',cls:'pdf'};
-            if (fileType.includes('word') || name.endsWith('.doc') || name.endsWith('.docx')) return {icon:'fa-file-word',cls:'word'};
-            if (fileType.includes('excel') || name.endsWith('.xls') || name.endsWith('.xlsx')) return {icon:'fa-file-excel',cls:'excel'};
-            if (fileType.includes('powerpoint') || name.endsWith('.ppt') || name.endsWith('.pptx')) return {icon:'fa-file-powerpoint',cls:'powerpoint'};
-            if (name.endsWith('.zip'))  return {icon:'fa-file-archive',cls:'zip'};
-            if (name.endsWith('.rar'))  return {icon:'fa-file-archive',cls:'rar'};
-            if (name.endsWith('.7z'))   return {icon:'fa-file-archive',cls:'7z'};
-            if (name.endsWith('.tar') || name.endsWith('.gz') || name.endsWith('.tgz')) return {icon:'fa-file-archive',cls:'tar'};
-            return {icon:'fa-file',cls:''};
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return { icon: 'fa-file-pdf', class: 'pdf' };
+            if (fileType.includes('word') || fileType.includes('document')) return { icon: 'fa-file-word', class: 'word' };
+            if (fileType.includes('excel') || fileType.includes('spreadsheet')) return { icon: 'fa-file-excel', class: 'excel' };
+            if (fileType.includes('powerpoint') || fileType.includes('presentation')) return { icon: 'fa-file-powerpoint', class: 'powerpoint' };
+            return { icon: 'fa-file', class: '' };
         }
 
         function formatFileSize(bytes) {
@@ -391,7 +376,7 @@
                         return `
                             <div class="document-card" onclick="downloadDocument(${doc.id})">
                                 <div class="category-badge">${doc.category || 'Без категории'}</div>
-                                <div class="document-icon ${fileIcon.cls}">
+                                <div class="document-icon ${fileIcon.class}">
                                     <i class="fas ${fileIcon.icon}"></i>
                                 </div>
                                 <div class="document-title">${doc.title}</div>
