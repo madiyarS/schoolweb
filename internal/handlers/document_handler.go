@@ -32,10 +32,17 @@ func (h *DocumentHandler) UploadDocument(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Parse multipart form (100 MB max for multiple files)
-	if err := r.ParseMultipartForm(100 << 20); err != nil {
+	// Parse multipart form (500 MB max for multiple large files)
+	// This allows uploading multiple files at once
+	if err := r.ParseMultipartForm(500 << 20); err != nil {
 		log.Printf("Error parsing multipart form: %v", err)
-		http.Error(w, "File too large or invalid form", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusRequestEntityTooLarge)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":    "Request too large",
+			"message":  "The total size of uploaded files exceeds the maximum allowed size (500MB). Please try uploading fewer files or smaller files.",
+			"max_size": "500MB",
+		})
 		return
 	}
 

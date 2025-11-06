@@ -533,6 +533,9 @@
             if (fileType.includes('word') || fileType.includes('document')) return { icon: 'fa-file-word', class: 'word' };
             if (fileType.includes('excel') || fileType.includes('spreadsheet')) return { icon: 'fa-file-excel', class: 'excel' };
             if (fileType.includes('powerpoint') || fileType.includes('presentation')) return { icon: 'fa-file-powerpoint', class: 'powerpoint' };
+            if (fileType.includes('zip') || fileType.includes('archive') || fileType.includes('compressed')) return { icon: 'fa-file-archive', class: 'default' };
+            if (fileType.includes('image') || fileType.includes('jpeg') || fileType.includes('jpg') || 
+                fileType.includes('png') || fileType.includes('gif') || fileType.includes('webp')) return { icon: 'fa-file-image', class: 'default' };
             return { icon: 'fa-file', class: 'default' };
         }
 

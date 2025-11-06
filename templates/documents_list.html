@@ -442,8 +442,8 @@
                     <div class="file-upload" id="fileUpload">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #3b82f6;"></i>
                         <p>Перетащите файлы сюда или нажмите для выбора</p>
-                        <p style="font-size: 12px; color: #666;">Поддерживаемые форматы: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT</p>
-                        <input type="file" id="fileInput" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" multiple required style="display: none;">
+                        <p style="font-size: 12px; color: #666;">Поддерживаемые форматы: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, ZIP, JPG, JPEG, PNG, GIF, WEBP</p>
+                        <input type="file" id="fileInput" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.jpg,.jpeg,.png,.gif,.webp" multiple required style="display: none;">
                     </div>
                     <div class="file-info" id="fileInfo" style="display: none;">
                         <strong>Выбранные файлы:</strong>
@@ -540,6 +540,9 @@
             if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
             if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
             if (fileType.includes('powerpoint') || fileType.includes('presentation')) return 'fa-file-powerpoint';
+            if (fileType.includes('zip') || fileType.includes('archive') || fileType.includes('compressed')) return 'fa-file-archive';
+            if (fileType.includes('image') || fileType.includes('jpeg') || fileType.includes('jpg') || 
+                fileType.includes('png') || fileType.includes('gif') || fileType.includes('webp')) return 'fa-file-image';
             return 'fa-file';
         }
 
@@ -789,6 +792,8 @@
                 fileList.innerHTML = '';
                 
                 let totalSize = 0;
+                const maxSize = 500 * 1024 * 1024; // 500MB in bytes
+                
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     totalSize += file.size;
@@ -809,6 +814,14 @@
                 summary.style.cssText = 'margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd; font-weight: 600;';
                 summary.textContent = `Всего файлов: ${files.length} | Общий размер: ${formatFileSize(totalSize)}`;
                 fileList.appendChild(summary);
+                
+                // Add warning if total size exceeds limit
+                if (totalSize > maxSize) {
+                    const warning = document.createElement('div');
+                    warning.style.cssText = 'margin-top: 0.5rem; padding: 0.75rem; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 0.5rem; color: #92400e; font-size: 0.9rem;';
+                    warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Предупреждение:</strong> Общий размер файлов превышает максимальный лимит (500MB). Загрузка может не удаться.';
+                    fileList.appendChild(warning);
+                }
                 
                 fileInfo.style.display = 'block';
             }
@@ -838,10 +851,26 @@
                     credentials: 'same-origin'
                 });
 
-                const data = await response.json();
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    // If not JSON, read as text to see what we got
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned an unexpected response format');
+                }
                 
                 if (!response.ok && response.status !== 206) { // 206 is partial success
-                    throw new Error(data.message || 'Failed to upload documents');
+                    // Handle specific error cases
+                    if (response.status === 413) { // Request Entity Too Large
+                        showStatus(data.message || 'Файлы слишком большие. Максимальный размер: 500MB. Попробуйте загрузить меньше файлов или файлы меньшего размера.', 'error');
+                        return;
+                    }
+                    throw new Error(data.message || data.error || 'Failed to upload documents');
                 }
 
                 // Handle response

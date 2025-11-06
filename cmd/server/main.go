@@ -27,13 +27,21 @@ func main() {
 	// Setup router
 	r := router.Setup(cfg, db)
 
-	// Start server
-	addr := ":" + cfg.ServerPort
-	log.Printf("Starting server on http://localhost%s", addr)
-	log.Printf("Admin panel available at http://localhost%s/admin/login.html", addr)
-	log.Printf("Login: %s, Password: %s", cfg.AdminUsername, cfg.AdminPassword)
+	// Create custom server with increased request size limit (500 MB)
+	// This allows for multiple large file uploads
+	server := &http.Server{
+		Addr:    ":" + cfg.ServerPort,
+		Handler: r,
+		// Increase MaxRequestSize to 500MB (default is 10MB)
+		MaxHeaderBytes: 1 << 20, // 1 MB for headers
+	}
 
-	if err := http.ListenAndServe(addr, r); err != nil {
+	log.Printf("Starting server on http://localhost%s", server.Addr)
+	log.Printf("Admin panel available at http://localhost%s/admin/login.html", server.Addr)
+	log.Printf("Login: %s, Password: %s", cfg.AdminUsername, cfg.AdminPassword)
+	log.Printf("Max request size: 500MB (for file uploads)")
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
