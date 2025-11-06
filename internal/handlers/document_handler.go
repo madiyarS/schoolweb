@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"school-website/internal/services"
@@ -31,31 +32,24 @@ func (h *DocumentHandler) UploadDocument(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Parse multipart form (32 MB max)
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
+	// Parse multipart form (100 MB max for multiple files)
+	if err := r.ParseMultipartForm(100 << 20); err != nil {
 		log.Printf("Error parsing multipart form: %v", err)
 		http.Error(w, "File too large or invalid form", http.StatusBadRequest)
 		return
 	}
 
-	// Get file from form
-	file, fileHeader, err := r.FormFile("document")
-	if err != nil {
-		log.Printf("Error getting file: %v", err)
-		http.Error(w, "Failed to get file from form", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
 	// Get form values
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	category := r.FormValue("category")
-	folderIDStr := r.FormValue("folder_id") // Добавлено
+	folderIDStr := r.FormValue("folder_id")
 
-	// Validate required fields
-	if title == "" {
-		http.Error(w, "Title is required", http.StatusBadRequest)
+	// Get all files from form
+	files := r.MultipartForm.File["document"]
+
+	if len(files) == 0 {
+		http.Error(w, "No files provided", http.StatusBadRequest)
 		return
 	}
 
@@ -65,18 +59,71 @@ func (h *DocumentHandler) UploadDocument(w http.ResponseWriter, r *http.Request)
 		folderID, _ = strconv.Atoi(folderIDStr)
 	}
 
-	// Upload document
-	doc, err := h.service.UploadDocument(title, description, category, folderID, file, fileHeader)
-	if err != nil {
-		log.Printf("Error uploading document: %v", err)
-		http.Error(w, fmt.Sprintf("Failed to upload document: %v", err), http.StatusInternalServerError)
+	// Handle single file (backward compatibility)
+	if len(files) == 1 {
+		// Use filename (without extension) as title if title is empty
+		fileTitle := title
+		if fileTitle == "" {
+			filename := files[0].Filename
+			ext := filepath.Ext(filename)
+			if ext != "" {
+				fileTitle = filename[:len(filename)-len(ext)]
+			} else {
+				fileTitle = filename
+			}
+		}
+
+		file, err := files[0].Open()
+		if err != nil {
+			log.Printf("Error opening file: %v", err)
+			http.Error(w, "Failed to open file", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		doc, err := h.service.UploadDocument(fileTitle, description, category, folderID, file, files[0])
+		if err != nil {
+			log.Printf("Error uploading document: %v", err)
+			http.Error(w, fmt.Sprintf("Failed to upload document: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(doc)
+		log.Printf("Document uploaded successfully: %s (ID: %d)", doc.Title, doc.ID)
 		return
 	}
 
+	// Handle multiple files - use filename as title for each if title is empty
+	documents, errors := h.service.UploadMultipleDocuments(title, description, category, folderID, files)
+
+	response := map[string]interface{}{
+		"success":   len(documents),
+		"failed":    len(errors),
+		"documents": documents,
+	}
+
+	if len(errors) > 0 {
+		errorMessages := make([]string, len(errors))
+		for i, err := range errors {
+			errorMessages[i] = err.Error()
+		}
+		response["errors"] = errorMessages
+		log.Printf("Uploaded %d documents, %d failed", len(documents), len(errors))
+	} else {
+		log.Printf("Successfully uploaded %d documents", len(documents))
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(doc)
-	log.Printf("Document uploaded successfully: %s (ID: %d)", doc.Title, doc.ID)
+	if len(errors) > 0 && len(documents) == 0 {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else if len(errors) > 0 {
+		w.WriteHeader(http.StatusPartialContent) // 206 for partial success
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func (h *DocumentHandler) GetAllDocuments(w http.ResponseWriter, r *http.Request) {

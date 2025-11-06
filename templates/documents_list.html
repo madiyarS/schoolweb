@@ -420,8 +420,9 @@
             </div>
             <form id="uploadForm" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="title">Название документа *</label>
-                    <input type="text" id="title" name="title" required>
+                    <label for="title">Название документа</label>
+                    <input type="text" id="title" name="title" placeholder="Если не указано, будет использовано имя файла">
+                    <small style="color: #666; font-size: 0.85rem;">Для нескольких файлов: если не указано, каждому файлу будет присвоено его имя</small>
                 </div>
 
                 <div class="form-group">
@@ -437,22 +438,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Файл *</label>
+                    <label>Файлы * (можно выбрать несколько)</label>
                     <div class="file-upload" id="fileUpload">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #3b82f6;"></i>
-                        <p>Перетащите файл сюда или нажмите для выбора</p>
-                        <p style="font-size: 12px; color: #666;">Поддерживаемые форматы: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX</p>
-                        <input type="file" id="fileInput" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" required style="display: none;">
+                        <p>Перетащите файлы сюда или нажмите для выбора</p>
+                        <p style="font-size: 12px; color: #666;">Поддерживаемые форматы: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT</p>
+                        <input type="file" id="fileInput" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" multiple required style="display: none;">
                     </div>
-                    <div class="file-info" id="fileInfo">
-                        <strong>Выбранный файл:</strong>
-                        <p id="fileName"></p>
-                        <p id="fileSize"></p>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <strong>Выбранные файлы:</strong>
+                        <div id="fileList"></div>
                     </div>
                 </div>
 
                 <button type="submit" class="btn" style="width: 100%;">
-                    <i class="fas fa-upload"></i> Загрузить документ
+                    <i class="fas fa-upload"></i> Загрузить документ(ы)
                 </button>
             </form>
         </div>
@@ -750,11 +750,9 @@
             fileUpload.addEventListener('click', () => fileInput.click());
 
             fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    document.getElementById('fileName').textContent = file.name;
-                    document.getElementById('fileSize').textContent = `Размер: ${formatFileSize(file.size)}`;
-                    fileInfo.classList.add('show');
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    displayFiles(files);
                 }
             });
 
@@ -774,14 +772,46 @@
                 fileUpload.style.borderColor = '#ddd';
                 fileUpload.style.background = 'transparent';
                 
-                const file = e.dataTransfer.files[0];
-                if (file) {
-                    fileInput.files = e.dataTransfer.files;
-                    document.getElementById('fileName').textContent = file.name;
-                    document.getElementById('fileSize').textContent = `Размер: ${formatFileSize(file.size)}`;
-                    fileInfo.classList.add('show');
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    // Create a new FileList-like object
+                    const dataTransfer = new DataTransfer();
+                    for (let i = 0; i < files.length; i++) {
+                        dataTransfer.items.add(files[i]);
+                    }
+                    fileInput.files = dataTransfer.files;
+                    displayFiles(files);
                 }
             });
+
+            function displayFiles(files) {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+                
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    totalSize += file.size;
+                    
+                    const fileItem = document.createElement('div');
+                    fileItem.style.cssText = 'padding: 0.5rem; margin: 0.5rem 0; background: #f3f4f6; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;';
+                    fileItem.innerHTML = `
+                        <div>
+                            <i class="fas fa-file" style="color: #3b82f6; margin-right: 0.5rem;"></i>
+                            <span style="font-weight: 500;">${file.name}</span>
+                            <span style="color: #666; font-size: 0.9rem; margin-left: 0.5rem;">(${formatFileSize(file.size)})</span>
+                        </div>
+                    `;
+                    fileList.appendChild(fileItem);
+                }
+                
+                const summary = document.createElement('div');
+                summary.style.cssText = 'margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd; font-weight: 600;';
+                summary.textContent = `Всего файлов: ${files.length} | Общий размер: ${formatFileSize(totalSize)}`;
+                fileList.appendChild(summary);
+                
+                fileInfo.style.display = 'block';
+            }
         }
 
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
@@ -789,8 +819,17 @@
             
             const formData = new FormData(e.target);
             const submitBtn = e.target.querySelector('button[type="submit"]');
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+            
+            if (!files || files.length === 0) {
+                showStatus('Пожалуйста, выберите хотя бы один файл', 'error');
+                return;
+            }
+            
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Загрузка...';
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
             
             try {
                 const response = await fetch('/admin/api/documents', {
@@ -799,17 +838,44 @@
                     credentials: 'same-origin'
                 });
 
-                if (!response.ok) throw new Error('Failed to upload document');
+                const data = await response.json();
+                
+                if (!response.ok && response.status !== 206) { // 206 is partial success
+                    throw new Error(data.message || 'Failed to upload documents');
+                }
 
-                showStatus('Документ успешно загружен!', 'success');
+                // Handle response
+                if (files.length === 1) {
+                    // Single file response (backward compatibility)
+                    showStatus('Документ успешно загружен!', 'success');
+                } else {
+                    // Multiple files response
+                    const successCount = data.success || 0;
+                    const failedCount = data.failed || 0;
+                    
+                    if (failedCount === 0) {
+                        showStatus(`Успешно загружено ${successCount} ${successCount === 1 ? 'документ' : successCount < 5 ? 'документа' : 'документов'}!`, 'success');
+                    } else if (successCount > 0) {
+                        showStatus(`Загружено ${successCount} из ${files.length} файлов. ${failedCount} ${failedCount === 1 ? 'файл' : 'файлов'} не удалось загрузить.`, 'warning');
+                        if (data.errors) {
+                            console.error('Upload errors:', data.errors);
+                        }
+                    } else {
+                        showStatus('Ошибка загрузки всех файлов', 'error');
+                        if (data.errors) {
+                            console.error('Upload errors:', data.errors);
+                        }
+                    }
+                }
+                
                 closeUploadModal();
                 loadData();
             } catch (error) {
-                console.error('Error uploading document:', error);
-                showStatus('Ошибка загрузки документа', 'error');
+                console.error('Error uploading documents:', error);
+                showStatus('Ошибка загрузки документов', 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-upload"></i> Загрузить документ';
+                submitBtn.innerHTML = originalText;
             }
         });
 

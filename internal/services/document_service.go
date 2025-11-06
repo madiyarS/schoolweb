@@ -92,3 +92,45 @@ func (s *DocumentService) GetDocumentsByCategory(category string) ([]models.Docu
 func (s *DocumentService) DeleteDocument(id string) error {
 	return s.db.DeleteDocument(id)
 }
+
+// UploadMultipleDocuments uploads multiple files with the same metadata
+// If title is empty, uses filename (without extension) as title for each file
+func (s *DocumentService) UploadMultipleDocuments(title, description, category string, folderID int, files []*multipart.FileHeader) ([]*models.Document, []error) {
+	var documents []*models.Document
+	var errors []error
+
+	for i, fileHeader := range files {
+		// Open file
+		file, err := fileHeader.Open()
+		if err != nil {
+			errors = append(errors, fmt.Errorf("file %d (%s): failed to open: %v", i+1, fileHeader.Filename, err))
+			continue
+		}
+
+		// Use filename as title if title is empty
+		fileTitle := title
+		if fileTitle == "" {
+			// Remove extension for cleaner title
+			filename := fileHeader.Filename
+			ext := filepath.Ext(filename)
+			if ext != "" {
+				fileTitle = filename[:len(filename)-len(ext)]
+			} else {
+				fileTitle = filename
+			}
+		}
+
+		// Upload single document
+		doc, err := s.UploadDocument(fileTitle, description, category, folderID, file, fileHeader)
+		file.Close()
+
+		if err != nil {
+			errors = append(errors, fmt.Errorf("file %d (%s): %v", i+1, fileHeader.Filename, err))
+			continue
+		}
+
+		documents = append(documents, doc)
+	}
+
+	return documents, errors
+}
